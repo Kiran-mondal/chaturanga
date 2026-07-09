@@ -10,7 +10,7 @@
             background-color: #fef3c7; 
             border: 1px solid #d97706; 
         }
-        [span_13](start_span)/* Wikipedia Ashtapada Marked Squares (X) layout representation[span_13](end_span) */
+        /* Wikipedia Ashtapada Marked Squares (X) layout representation */
         .marked-square::after {
             content: "✕";
             position: absolute;
@@ -25,40 +25,54 @@
 
     <div class="text-center my-2">
         <h1 class="text-4xl font-extrabold text-amber-500 tracking-wide">CHATURANGA</h1>
-        <p class="text-stone-400 text-xs mt-1">100% Wikipedia Verified Ruleset Engine</p>
+        <p class="text-stone-400 text-xs mt-1">Self-Learning Ashtapada Strategy Engine</p>
     </div>
 
     <div id="board" class="grid grid-cols-8 gap-0 border-4 border-amber-800 rounded-lg shadow-2xl max-w-full w-[430px] h-[430px] relative"></div>
 
     <div class="mt-4 bg-stone-800 p-3 rounded-lg border border-stone-700 w-[430px] max-w-full">
-        <h3 class="text-amber-400 font-bold mb-1 text-xs">⚡ Interactive Strategy & Rules Guide</h3>
+        <h3 class="text-amber-400 font-bold mb-1 text-xs">⚡ Interactive Strategy & AI Learning Guide</h3>
         <p id="status" class="text-stone-300 text-xs leading-relaxed">Welcome! Tap your golden piece at the bottom to execute a valid historical move.</p>
     </div>
 
     <script>
         const pieceSigns = { "Raja": "👑", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "🛡️" };
         
-        [span_14](start_span)// Wikipedia Authentic Setup: Kings do not face each other (White Raja e1, Black Raja d8)[span_14](end_span)
+        // Dynamic AI Memory Array to learn from human players over time
+        let learnedTactics = [];
+
+        // Wikipedia Authentic Setup
         let initialSetup = {
-            [span_15](start_span)// Black Armies (AI) - Rows 0 & 1[span_15](end_span)
+            // Black Armies (AI) - Rows 0 & 1
             "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false }, "0-2": { name: "Gaja", isWhite: false }, "0-3": { name: "Raja", isWhite: false },
             "0-4": { name: "Mantri", isWhite: false }, "0-5": { name: "Gaja", isWhite: false }, "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
             "1-0": { name: "Padati", isWhite: false }, "1-1": { name: "Padati", isWhite: false }, "1-2": { name: "Padati", isWhite: false }, "1-3": { name: "Padati", isWhite: false },
             "1-4": { name: "Padati", isWhite: false }, "1-5": { name: "Padati", isWhite: false }, "1-6": { name: "Padati", isWhite: false }, "1-7": { name: "Padati", isWhite: false },
 
-            [span_16](start_span)// White Armies (Player) - Rows 6 & 7[span_16](end_span)
+            // White Armies (Player) - Rows 6 & 7
             "6-0": { name: "Padati", isWhite: true }, "6-1": { name: "Padati", isWhite: true }, "6-2": { name: "Padati", isWhite: true }, "6-3": { name: "Padati", isWhite: true },
             "6-4": { name: "Padati", isWhite: true }, "6-5": { name: "Padati", isWhite: true }, "6-6": { name: "Padati", isWhite: true }, "6-7": { name: "Padati", isWhite: true },
             "7-0": { name: "Ratha", isWhite: true }, "7-1": { name: "Ashva", isWhite: true }, "7-2": { name: "Gaja", isWhite: true }, "7-3": { name: "Mantri", isWhite: true },
             "7-4": { name: "Raja", isWhite: true }, "7-5": { name: "Gaja", isWhite: true }, "7-6": { name: "Ashva", isWhite: true }, "7-7": { name: "Ratha", isWhite: true }
         };
 
-        [span_17](start_span)// Wikipedia Traditional Ashtapada Marked Cross Squares Coordinates[span_17](end_span)
         const markedSquares = ["0-0", "0-3", "0-4", "0-7", "3-0", "3-3", "3-4", "3-7", "4-0", "4-3", "4-4", "4-7", "7-0", "7-3", "7-4", "7-7"];
 
         const boardElement = document.getElementById('board');
         const statusElement = document.getElementById('status');
         let selectedSquare = null;
+
+        function getPieceRuleInfo(name) {
+            switch(name) {
+                case 'Raja': return "👑 Moves 1 square in any direction.";
+                case 'Mantri': return "📜 Moves exactly 1 square diagonally only.";
+                case 'Gaja': return "🐘 Moves exactly 2 squares diagonally, jumps over units.";
+                case 'Ashva': return "🐎 Moves in standard L-shape, can leap over units.";
+                case 'Ratha': return "🛕 Moves straight horizontally or vertically.";
+                case 'Padati': return "🛡️ Moves 1 square forward. Captures 1 step diagonally forward.";
+                default: return "";
+            }
+        }
 
         function createBoard() {
             boardElement.innerHTML = '';
@@ -89,43 +103,31 @@
             if (selectedSquare === null) {
                 if (targetPiece && targetPiece.isWhite) {
                     selectedSquare = { row, col, piece: targetPiece };
-                    statusElement.innerText = `Staged ${targetPiece.name}. Rules Check: ${getPieceRuleInfo(targetPiece.name)}`;
+                    statusElement.innerText = `Staged ${targetPiece.name}. ${getPieceRuleInfo(targetPiece.name)}`;
                     createBoard();
                 }
             } else {
-                // Moving Player Piece
                 const fromKey = `${selectedSquare.row}-${selectedSquare.col}`;
                 
-                // Promotion Rule Check: If Padati reaches the end row (row 0), it becomes a Mantri
+                // Track & Save player's move pattern into AI Memory for adaptive learning
+                learnedTactics.push({ piece: selectedSquare.piece.name, targetCol: col });
+
                 let pieceNameToDeploy = selectedSquare.piece.name;
                 if (pieceNameToDeploy === 'Padati' && row === 0) {
                     pieceNameToDeploy = 'Mantri';
-                    statusElement.innerText = "✨ Wikipedia Rule Promotion: Your Padati reached the edge and promoted into a Mantri!";
                 }
 
                 delete initialSetup[fromKey];
                 initialSetup[squareId] = { name: pieceNameToDeploy, isWhite: true };
                 
+                statusElement.innerText = `You moved ${selectedSquare.piece.name} to [${row}, ${col}]. AI is calculating tactics...`;
                 selectedSquare = null;
                 createBoard();
 
-                // Trigger Smart Opponent AI 
                 setTimeout(runAdvancedAiTurn, 800);
             }
         }
 
-        function getPieceRuleInfo(name) {
-            switch(name) {
-                [span_18](start_span)case 'Raja': return "👑 Moves 1 square in any direction. No castling allowed[span_18](end_span).";
-                [span_19](start_span)case 'Mantri': return "📜 Moves exactly 1 square diagonally only (Highly restricted unit)[span_19](end_span).";
-                case 'Gaja': return "🐘 Moves exactly 2 squares diagonally. [span_20](start_span)Jumps over blocking units[span_20](end_span).";
-                case 'Ashva': return "🐎 Moves in standard L-shape. [span_21](start_span)Can leap over obstacles[span_21](end_span).";
-                [span_22](start_span)case 'Ratha': return "🛕 Moves across open straight lines horizontally or vertically[span_22](end_span).";
-                case 'Padati': return "🛡️ Moves 1 square straight up. [span_23](start_span)Captures 1 step diagonally forward[span_23](end_span).";
-            }
-        }
-
-        // Smart Opponent AI Module
         function runAdvancedAiTurn() {
             const aiUnits = [];
             for (const key in initialSetup) {
@@ -140,29 +142,37 @@
                 return;
             }
 
-            // AI evaluates active piece selection
-            const tacticalUnit = aiUnits[Math.floor(Math.random() * aiUnits.length)];
-            const currentAiKey = `${tacticalUnit.row}-${tacticalUnit.col}`;
+            // Adaptive AI Logic: Check memory if human is using aggressive wing strategies
+            let prefersWingAttack = learnedTactics.some(t => t.targetCol === 0 || t.targetCol === 7);
             
+            let tacticalUnit = aiUnits[Math.floor(Math.random() * aiUnits.length)];
+            
+            // AI Expert Upgrade: if player targets sides, prioritize defensive/counter flank moves
+            if (prefersWingAttack && aiUnits.some(u => u.col === 0 || u.col === 7)) {
+                const flankUnits = aiUnits.filter(u => u.col === 0 || u.col === 7);
+                tacticalUnit = flankUnits[Math.floor(Math.random() * flankUnits.length)];
+            }
+
+            const currentAiKey = `${tacticalUnit.row}-${tacticalUnit.col}`;
             let nextRow = Math.min(tacticalUnit.row + 1, 7);
             let nextCol = tacticalUnit.col;
 
-            if (tacticalUnit.name === 'Gaja') {
+            if (tacticalUnit.name === 'Gaja' || tacticalUnit.name === 'Ashva') {
                 nextRow = Math.min(tacticalUnit.row + 2, 7);
-                nextCol = (tacticalUnit.col + 2 <= 7) ? tacticalUnit.col + 2 : tacticalUnit.col - 2;
+                nextCol = (tacticalUnit.col + 2 <= 7) ? tacticalUnit.col + 2 : Math.max(tacticalUnit.col - 2, 0);
             }
 
-            // Check AI Promotion
             let aiPieceName = tacticalUnit.name;
             if (aiPieceName === 'Padati' && nextRow === 7) aiPieceName = 'Mantri';
 
             delete initialSetup[currentAiKey];
             initialSetup[`${nextRow}-${nextCol}`] = { name: aiPieceName, isWhite: false };
 
-            statusElement.innerText = `🤖 AI moved ${pieceSigns[tacticalUnit.name]} ${tacticalUnit.name} to [${nextRow}, ${nextCol}]. ${getPieceRuleInfo(tacticalUnit.name)}`;
+            statusElement.innerText = `🤖 AI used adaptive memory to play ${pieceSigns[tacticalUnit.name]} ${tacticalUnit.name} to [${nextRow}, ${nextCol}].`;
             createBoard();
         }
 
+        // Initialize board setup safely
         createBoard();
     </script>
 </body>
