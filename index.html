@@ -28,7 +28,7 @@
             background: radial-gradient(circle at center, #3a2010 0%, #120702 100%);
             background-image: 
                 linear-gradient(rgba(36, 19, 9, 0.9), rgba(15, 7, 3, 0.96)),
-                url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop'); /* প্রিমিয়াম টেক্সচার */
+                url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop');
             background-size: 200% 200%;
             background-attachment: fixed;
             animation: ambientGlow 15s ease-in-out infinite;
@@ -62,7 +62,6 @@
         .selected { 
             background-color: #f59e0b !important; 
             box-shadow: inset 0 0 15px #b45309;
-            animation: goldPulse 2s infinite;
         }
         
         /* সম্ভাব্য চালের মার্কার অ্যানিমেশন */
@@ -76,7 +75,6 @@
             z-index: 20;
             pointer-events: none;
             box-shadow: 0 0 10px #10b981;
-            animation: pulse 1.5s infinite;
         }
         
         /* আক্রমণ/কাটার ঘর */
@@ -108,7 +106,7 @@
         <p class="text-amber-500/70 text-xs mt-1 font-sans tracking-wider uppercase">The Animated Indian Rulebook & Path-Blocking Engine</p>
     </div>
 
-    <!-- 🎮 মোড সিলেকশন ইন্টারফেস (অ্যানিমেটেড বর্ডার) -->
+    <!-- 🎮 মোড সিলেকশন ইন্টারফেস -->
     <div id="mode-panel" class="flex gap-4 mb-3 heritage-card active-turn-card p-2 rounded-xl w-[430px] max-w-full justify-center items-center">
         <button id="btn2P" onclick="switchMode('2-Player')" class="px-3 py-2 text-xs font-bold bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition font-sans border border-amber-900/40">
             👥 Pass & Play
@@ -153,8 +151,7 @@
             </button>
         </div>
     </div>
-
-    <script>
+        <script>
         const pieceSigns = { "Raja": "👑", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "🛡️" };
         let currentMode = "Vs-AI"; 
         let isGameOver = false; 
@@ -200,10 +197,10 @@
             resetInitialSetup();
             modalElement.classList.add('hidden');
             
-            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer font-sans' : 'px-3 py-2 text-xs font-bold bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition font-sans border border-amber-900/40';
-            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer font-sans' : 'px-3 py-2 text-xs font-bold bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition font-sans border border-amber-900/40';
+            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer font-sans shadow-md' : 'px-3 py-2 text-xs font-bold bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition font-sans border border-amber-900/40';
+            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer font-sans shadow-md' : 'px-3 py-2 text-xs font-bold bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition font-sans border border-amber-900/40';
             
-            statusElement.innerText = currentMode === 'Vs-AI' ? "Arena updated with animations. AI Ready." : "Arena updated with animations. Pass & Play Ready.";
+            statusElement.innerText = currentMode === 'Vs-AI' ? "Arena updated with animations. VS Computer AI Mode Active." : "Arena updated with animations. Pass & Play Friend Mode Active.";
             createBoard();
         }
 
@@ -396,7 +393,7 @@
                     const [fromR, fromC] = key.split('-').map(Number);
                     const piece = initialSetup[key];
                     
-                    for (let toR = 0; toR < 8; r=0, toR++) { 
+                    for (let toR = 0; toR < 8; toR++) { 
                         for (let toC = 0; toC < 8; toC++) {
                             if (checkLegalMove(piece, fromR, fromC, toR, toC)) {
                                 const target = initialSetup[`${toR}-${toC}`];
@@ -404,4 +401,43 @@
                                 if (target) {
                                     weight = target.name === 'Raja' ? 100 : (target.name === 'Mantri' ? 30 : 10);
                                 }
-                                allLegalAiMoves.push({ fromKey: key, toKey: `${toR}
+                                allLegalAiMoves.push({ fromKey: key, toKey: `${toR}-${toC}`, piece: piece, weight: weight, targetPiece: target });
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (allLegalAiMoves.length === 0) {
+                isGameOver = true;
+                showEndGameModal("Match Dropped", "The battlefield is stalled. AI has no legal moves left. It's a DRAW!", "🏳️");
+                return;
+            }
+
+            allLegalAiMoves.sort((a, b) => b.weight - a.weight);
+            const bestMove = allLegalAiMoves[0]; 
+
+            if (bestMove.targetPiece) {
+                capturedWhite.push(bestMove.targetPiece.name);
+                if (bestMove.targetPiece.name === 'Raja') {
+                    isGameOver = true;
+                    createBoard();
+                    showEndGameModal("Game Over", "AI Captured your Raja! Black Armies win the battlefield.", "💀");
+                    return;
+                } else {
+                    statusElement.innerText = `🤖 AI captured your ${bestMove.targetPiece.name}!`;
+                }
+            } else {
+                statusElement.innerText = `🤖 AI moved ${bestMove.piece.name} strictly to [${bestMove.toKey}].`;
+            }
+
+            delete initialSetup[bestMove.fromKey];
+            initialSetup[bestMove.toKey] = { name: bestMove.piece.name, isWhite: false };
+
+            createBoard();
+        }
+
+        triggerReset();
+    </script>
+</body>
+</html>
