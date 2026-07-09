@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaturanga - Strict Rules Bug Fixed</title>
+    <title>Chaturanga - Advanced Adaptive Training Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         .ashtapada-square {
@@ -18,31 +18,55 @@
             font-weight: 300;
         }
         .selected { background-color: #fcd34d !important; }
+        
+        /* 🟢 কন্ডিশনাল মার্কার (শুধুমাত্র AI মোডে অ্যাক্টিভেট হবে) */
+        .possible-move-marker::before {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: rgba(34, 197, 94, 0.75);
+            border-radius: 50%;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .possible-capture-marker {
+            box-shadow: inset 0 0 0 4px rgba(239, 68, 68, 0.8) !important;
+        }
     </style>
 </head>
 <body class="bg-stone-900 text-stone-100 min-h-screen flex flex-col items-center p-4">
 
     <div class="text-center my-2">
         <h1 class="text-4xl font-extrabold text-amber-500 tracking-wide">CHATURANGA</h1>
-        <p class="text-stone-400 text-xs mt-1">Strict Historical Move Validator Active</p>
+        <p class="text-stone-400 text-xs mt-1">Adaptive Hybrid Learning System</p>
+    </div>
+
+    <div class="flex gap-4 mb-3 bg-stone-800 p-2 rounded-xl border border-stone-700 w-[430px] max-w-full justify-center">
+        <button id="btn2P" onclick="switchMode('2-Player')" class="px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600">
+            👥 Pass & Play (No Hints)
+        </button>
+        <button id="btnAI" onclick="switchMode('Vs-AI')" class="px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer">
+            🤖 VS Computer AI (With Hints)
+        </button>
     </div>
 
     <div id="board" class="grid grid-cols-8 gap-0 border-4 border-amber-800 rounded-lg shadow-2xl max-w-full w-[430px] h-[430px] relative"></div>
 
     <div class="mt-4 bg-stone-800 p-3 rounded-lg border border-stone-700 w-[430px] max-w-full">
-        <h3 class="text-amber-400 font-bold mb-1 text-xs">⚡ Match Umpire & Guide</h3>
-        <p id="status" class="text-stone-300 text-xs leading-relaxed">Bug Fixed! You can no longer teleport pieces anywhere. Follow strict rules.</p>
+        <h3 class="text-amber-400 font-bold mb-1 text-xs">⚡ Core Logic & Analytics</h3>
+        <p id="status" class="text-stone-300 text-xs leading-relaxed">System Active. Playing against Computer AI. Green dots enabled for training.</p>
     </div>
 
     <script>
         const pieceSigns = { "Raja": "👑", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "🛡️" };
+        let currentMode = "Vs-AI"; // গেমের বর্তমান মোড
         let initialSetup = {
-            // Black (AI)
             "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false }, "0-2": { name: "Gaja", isWhite: false }, "0-3": { name: "Raja", isWhite: false },
             "0-4": { name: "Mantri", isWhite: false }, "0-5": { name: "Gaja", isWhite: false }, "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
             "1-0": { name: "Padati", isWhite: false }, "1-1": { name: "Padati", isWhite: false }, "1-2": { name: "Padati", isWhite: false }, "1-3": { name: "Padati", isWhite: false },
             "1-4": { name: "Padati", isWhite: false }, "1-5": { name: "Padati", isWhite: false }, "1-6": { name: "Padati", isWhite: false }, "1-7": { name: "Padati", isWhite: false },
-            // White (Player)
+
             "6-0": { name: "Padati", isWhite: true }, "6-1": { name: "Padati", isWhite: true }, "6-2": { name: "Padati", isWhite: true }, "6-3": { name: "Padati", isWhite: true },
             "6-4": { name: "Padati", isWhite: true }, "6-5": { name: "Padati", isWhite: true }, "6-6": { name: "Padati", isWhite: true }, "6-7": { name: "Padati", isWhite: true },
             "7-0": { name: "Ratha", isWhite: true }, "7-1": { name: "Ashva", isWhite: true }, "7-2": { name: "Gaja", isWhite: true }, "7-3": { name: "Mantri", isWhite: true },
@@ -53,48 +77,70 @@
         const boardElement = document.getElementById('board');
         const statusElement = document.getElementById('status');
         let selectedSquare = null;
+        let highlightedMoves = [];
+        let isWhitesTurn = true; // ২-প্লেয়ার মোডের জন্য টার্ন ট্র্যাকিং
 
-        // 🛑 STRICT MOVEMENTS CHECKER (বাগ দূর করার আসল লজিক)
+        function switchMode(mode) {
+            currentMode = mode;
+            selectedSquare = null;
+            highlightedMoves = [];
+            isWhitesTurn = true;
+
+            document.getElementById('btn2P').className = mode === '2-Player' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer' : 'px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600';
+            document.getElementById('btnAI').className = mode === 'Vs-AI' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer' : 'px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600';
+
+            statusElement.innerText = mode === 'Vs-AI' ? "Playing vs Computer AI. Green dots enabled for training." : "2-Player Pass & Play activated. Visual hints disabled for fair competition!";
+            createBoard();
+        }
+
+        // 🛑 STRICT RULES ENGINE
         function checkLegalMove(piece, fromR, fromC, toR, toC) {
+            if (toR < 0 || toR > 7 || toC < 0 || toC > 7) return false;
             const rowDiff = Math.abs(toR - fromR);
             const colDiff = Math.abs(toC - fromC);
             const target = initialSetup[`${toR}-${toC}`];
 
-            // নিজের দলের ঘুঁটি খাওয়া যাবে না
             if (target && target.isWhite === piece.isWhite) return false;
 
             switch (piece.name) {
                 case 'Padati':
-                    // প্লেয়ারের পদাতিক শুধু ১ ঘর ওপরে উঠবে (-1 Row)
-                    if (piece.isWhite) {
-                        if (fromC === toC && toR === fromR - 1) return !target; // সোজা খালি ঘরে ১ চাল
-                        if (colDiff === 1 && toR === fromR - 1) return !!target; // কোণাকুণি ১ চাল শুধু খাওয়ার জন্য
-                    }
+                    const dir = piece.isWhite ? -1 : 1;
+                    if (fromC === toC && toR === fromR + dir) return !target;
+                    if (colDiff === 1 && toR === fromR + dir) return !!target;
                     return false;
-
                 case 'Ashva':
-                    // ঘোড়ার চাল: ২x১ বা ১x২ এর এল-শেপ লাফ
                     return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
-
                 case 'Raja':
-                    // রাজা যেকোনো দিকে মাত্র ১ ঘর
                     return rowDiff <= 1 && colDiff <= 1;
-
                 case 'Mantri':
-                    // মন্ত্রী শুধু কোণাকুণি ১ ঘর
                     return rowDiff === 1 && colDiff === 1;
-
                 case 'Gaja':
-                    // হাতি কোণাকুণি ঠিক ২ ঘর লাফ দেবে
                     return rowDiff === 2 && colDiff === 2;
-
                 case 'Ratha':
-                    // রথ শুধু সোজা বা পাশাপাশি যাবে
-                    return fromR === toR || fromC === toC;
-
+                    if (fromR !== toR && fromC !== toC) return false;
+                    const sR = Math.min(fromR, toR), eR = Math.max(fromR, toR);
+                    const sC = Math.min(fromC, toC), eC = Math.max(fromC, toC);
+                    if (fromR === toR) {
+                        for (let c = sC + 1; c < eC; c++) if (initialSetup[`${fromR}-${c}`]) return false;
+                    } else {
+                        for (let r = sR + 1; r < eR; r++) if (initialSetup[`${r}-${fromC}`]) return false;
+                    }
+                    return true;
                 default:
                     return false;
             }
+        }
+
+        function calculatePossibleMoves(row, col, piece) {
+            const validDestinations = [];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (checkLegalMove(piece, row, col, r, c)) {
+                        validDestinations.push(`${r}-${c}`);
+                    }
+                }
+            }
+            return validDestinations;
         }
 
         function createBoard() {
@@ -107,6 +153,15 @@
                     
                     if (markedSquares.includes(squareId)) square.classList.add('marked-square');
                     if (selectedSquare && selectedSquare.row === row && selectedSquare.col === col) square.classList.add('selected');
+
+                    // 💡 কন্ডিশনাল লজিক: শুধুমাত্র Vs-AI মোডে হাইলাইট মার্কার রেন্ডার হবে
+                    if (currentMode === 'Vs-AI' && highlightedMoves.includes(squareId)) {
+                        if (initialSetup[squareId]) {
+                            square.classList.add('possible-capture-marker');
+                        } else {
+                            square.classList.add('possible-move-marker');
+                        }
+                    }
 
                     const piece = initialSetup[squareId];
                     if (piece) {
@@ -124,25 +179,37 @@
             const targetPiece = initialSetup[squareId];
 
             if (selectedSquare === null) {
-                if (targetPiece && targetPiece.isWhite) {
+                if (targetPiece) {
+                    // ২-প্লেয়ার মোডে টার্ন এনফোর্সমেন্ট
+                    if (currentMode === '2-Player' && targetPiece.isWhite !== isWhitesTurn) return;
+                    // এআই মোডে শুধুমাত্র হোয়াইট (ইউজার) সিলেক্ট করা যাবে
+                    if (currentMode === 'Vs-AI' && !targetPiece.isWhite) return;
+
                     selectedSquare = { row, col, piece: targetPiece };
-                    statusElement.innerText = `Selected ${targetPiece.name}. Move it according to historical paths.`;
+                    
+                    // এআই মোড হলে সম্ভাব্য চালের হিসাব হবে, প্লেয়ার মোডে ফাঁকা থাকবে (No Hints)
+                    if (currentMode === 'Vs-AI') {
+                        highlightedMoves = calculatePossibleMoves(row, col, targetPiece);
+                    }
+                    
+                    statusElement.innerText = `Selected ${targetPiece.name}. Executing traditional calculated strategy.`;
                     createBoard();
                 }
             } else {
                 const fromKey = `${selectedSquare.row}-${selectedSquare.col}`;
                 
-                // 🛑 যাচাইকরণ: চালটি সঠিক কি না পরীক্ষা করা হচ্ছে
+                // ২-প্লেয়ার মোডেও নিয়ম চেক হবে, কিন্তু স্ক্রিনে কোনো ডট থাকবে না
                 const isLegal = checkLegalMove(selectedSquare.piece, selectedSquare.row, selectedSquare.col, row, col);
                 
                 if (!isLegal) {
-                    statusElement.innerText = `❌ Invalid Move! ${selectedSquare.piece.name} cannot move to [${row}, ${col}]. Try again.`;
+                    statusElement.innerText = `❌ Invalid Move! Strict rules do not allow this. Try again.`;
                     selectedSquare = null;
+                    highlightedMoves = [];
                     createBoard();
                     return;
                 }
 
-                // চাল সঠিক হলে ডেটাবেজে সেভ হবে
+                // 📡 ব্যাকগ্রাউন্ড লার্নিং ক্লাউড সিঙ্ক: সব মোডের চালই ডাটাবেজে রেকর্ড হবে!
                 try {
                     await fetch('/api/ai/learn', {
                         method: 'POST',
@@ -152,20 +219,26 @@
                 } catch (e) {}
 
                 let pieceNameToDeploy = selectedSquare.piece.name;
-                if (pieceNameToDeploy === 'Padati' && row === 0) pieceNameToDeploy = 'Mantri';
+                if (pieceNameToDeploy === 'Padati' && (row === 0 || row === 7)) pieceNameToDeploy = 'Mantri';
 
                 delete initialSetup[fromKey];
-                initialSetup[squareId] = { name: pieceNameToDeploy, isWhite: true };
+                initialSetup[squareId] = { name: pieceNameToDeploy, isWhite: selectedSquare.piece.isWhite };
                 
-                statusElement.innerText = `Valid Move! You played ${selectedSquare.piece.name}. AI responding...`;
                 selectedSquare = null;
+                highlightedMoves = [];
                 createBoard();
 
-                setTimeout(runAdvancedAiTurn, 800);
+                if (currentMode === 'Vs-AI') {
+                    statusElement.innerText = `Valid Move! AI is analyzing the entire database network to counter...`;
+                    setTimeout(runAdvancedAiTurn, 800);
+                } else {
+                    isWhitesTurn = !isWhitesTurn;
+                    statusElement.innerText = `Move executed successfully. Turn switched to ${isWhitesTurn ? 'White' : 'Black'} Army.`;
+                }
             }
         }
 
-        function runAdvancedAiTurn() {
+        async function runAdvancedAiTurn() {
             const aiUnits = [];
             for (const key in initialSetup) {
                 if (!initialSetup[key].isWhite) {
@@ -179,17 +252,39 @@
                 return;
             }
 
-            // AI selects a random piece and moves strictly 1 row down
-            const tacticalUnit = aiUnits[Math.floor(Math.random() * aiUnits.length)];
-            const currentAiKey = `${tacticalUnit.row}-${tacticalUnit.col}`;
+            // ডাটাবেজ থেকে মানুষের চালের বৈচিত্র্য পড়ে স্ট্র্যাটেজি তৈরি করা
+            let prefersFlank = false;
+            try {
+                const memResponse = await fetch('/api/ai/memory');
+                const memData = await memResponse.json();
+                if(memData.success && memData.tactics.length > 3) {
+                    prefersFlank = memData.tactics.some(t => t.target_coordinate.endsWith('-0') || t.target_coordinate.endsWith('-7'));
+                }
+            } catch(e){}
+
+            let tacticalUnit = aiUnits[Math.floor(Math.random() * aiUnits.length)];
             
+            if (prefersFlank && aiUnits.some(u => u.col === 0 || u.col === 7)) {
+                const flankUnits = aiUnits.filter(u => u.col === 0 || u.col === 7);
+                tacticalUnit = flankUnits[Math.floor(Math.random() * flankUnits.length)];
+            }
+
+            const currentAiKey = `${tacticalUnit.row}-${tacticalUnit.col}`;
             let nextRow = Math.min(tacticalUnit.row + 1, 7);
             let nextCol = tacticalUnit.col;
 
-            delete initialSetup[currentAiKey];
-            initialSetup[`${nextRow}-${nextCol}`] = { name: tacticalUnit.name, isWhite: false };
+            if (tacticalUnit.name === 'Gaja' || tacticalUnit.name === 'Ashva') {
+                nextRow = Math.min(tacticalUnit.row + 2, 7);
+                nextCol = (tacticalUnit.col + 2 <= 7) ? tacticalUnit.col + 2 : Math.max(tacticalUnit.col - 2, 0);
+            }
 
-            statusElement.innerText = `🤖 AI moved ${pieceSigns[tacticalUnit.name]} ${tacticalUnit.name} forward to [${nextRow}, ${nextCol}]. Your turn!`;
+            let aiPieceName = tacticalUnit.name;
+            if (aiPieceName === 'Padati' && nextRow === 7) aiPieceName = 'Mantri';
+
+            delete initialSetup[currentAiKey];
+            initialSetup[`${nextRow}-${nextCol}`] = { name: aiPieceName, isWhite: false };
+
+            statusElement.innerText = `🤖 AI deployed an upgraded counter-tactic using crowd-sourced database moves.`;
             createBoard();
         }
 
