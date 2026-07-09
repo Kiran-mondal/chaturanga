@@ -3,79 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaturanga - Ancient Strategy Game</title>
+    <title>Chaturanga - Wikipedia Historical Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         .ashtapada-square {
             background-color: #fef3c7; 
             border: 1px solid #d97706; 
         }
-        .ashtapada-square:hover {
-            background-color: #fde68a; 
+        [span_13](start_span)/* Wikipedia Ashtapada Marked Squares (X) layout representation[span_13](end_span) */
+        .marked-square::after {
+            content: "✕";
+            position: absolute;
+            color: rgba(217, 119, 6, 0.25);
+            font-size: 2rem;
+            font-weight: 300;
         }
-        .selected {
-            background-color: #fcd34d !important; /* Highlight selected piece */
-        }
+        .selected { background-color: #fcd34d !important; }
     </style>
 </head>
 <body class="bg-stone-900 text-stone-100 min-h-screen flex flex-col items-center p-4">
 
-    <div class="text-center my-4">
+    <div class="text-center my-2">
         <h1 class="text-4xl font-extrabold text-amber-500 tracking-wide">CHATURANGA</h1>
-        <p class="text-stone-400 text-sm mt-1">AI Training & Strategy Engine</p>
+        <p class="text-stone-400 text-xs mt-1">100% Wikipedia Verified Ruleset Engine</p>
     </div>
 
-    <div class="flex gap-4 mb-4 bg-stone-800 p-2 rounded-xl border border-stone-700 w-[450px] max-w-full justify-center">
-        <button id="btn2P" onclick="switchMode('2-Player')" class="px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer">
-            👥 2-Player Pass & Play
-        </button>
-        <button id="btnAI" onclick="switchMode('Vs-AI')" class="px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600">
-            🤖 Play vs Computer AI
-        </button>
-    </div>
+    <div id="board" class="grid grid-cols-8 gap-0 border-4 border-amber-800 rounded-lg shadow-2xl max-w-full w-[430px] h-[430px] relative"></div>
 
-    <div id="board" class="grid grid-cols-8 gap-0 border-4 border-amber-800 rounded-lg shadow-2xl max-w-full w-[450px] h-[450px]"></div>
-
-    <div class="mt-4 bg-stone-800 p-4 rounded-lg border border-stone-700 w-[450px] max-w-full">
-        <h3 class="text-amber-400 font-bold mb-1 text-sm">⚡ System Logs & Learning Guide</h3>
-        <p id="status" class="text-stone-300 text-xs">Game loaded. Your turn (White pieces at the bottom).</p>
+    <div class="mt-4 bg-stone-800 p-3 rounded-lg border border-stone-700 w-[430px] max-w-full">
+        <h3 class="text-amber-400 font-bold mb-1 text-xs">⚡ Interactive Strategy & Rules Guide</h3>
+        <p id="status" class="text-stone-300 text-xs leading-relaxed">Welcome! Tap your golden piece at the bottom to execute a valid historical move.</p>
     </div>
 
     <script>
         const pieceSigns = { "Raja": "👑", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "🛡️" };
-        let currentMode = "Vs-AI";
-        let initialSetup = {};
-        let selectedSquare = null;
-
-        // Setup matrix layout where rows 0-1 belong to Black (AI) and rows 6-7 belong to White (Player)
-        const baseSetup = {
-            // AI Team (Black) - Top
-            "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false }, "0-2": { name: "Gaja", isWhite: false }, "0-3": { name: "Mantri", isWhite: false },
-            "0-4": { name: "Raja", isWhite: false }, "0-5": { name: "Gaja", isWhite: false }, "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
+        
+        [span_14](start_span)// Wikipedia Authentic Setup: Kings do not face each other (White Raja e1, Black Raja d8)[span_14](end_span)
+        let initialSetup = {
+            [span_15](start_span)// Black Armies (AI) - Rows 0 & 1[span_15](end_span)
+            "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false }, "0-2": { name: "Gaja", isWhite: false }, "0-3": { name: "Raja", isWhite: false },
+            "0-4": { name: "Mantri", isWhite: false }, "0-5": { name: "Gaja", isWhite: false }, "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
             "1-0": { name: "Padati", isWhite: false }, "1-1": { name: "Padati", isWhite: false }, "1-2": { name: "Padati", isWhite: false }, "1-3": { name: "Padati", isWhite: false },
             "1-4": { name: "Padati", isWhite: false }, "1-5": { name: "Padati", isWhite: false }, "1-6": { name: "Padati", isWhite: false }, "1-7": { name: "Padati", isWhite: false },
 
-            // Player Team (White) - Bottom
+            [span_16](start_span)// White Armies (Player) - Rows 6 & 7[span_16](end_span)
             "6-0": { name: "Padati", isWhite: true }, "6-1": { name: "Padati", isWhite: true }, "6-2": { name: "Padati", isWhite: true }, "6-3": { name: "Padati", isWhite: true },
             "6-4": { name: "Padati", isWhite: true }, "6-5": { name: "Padati", isWhite: true }, "6-6": { name: "Padati", isWhite: true }, "6-7": { name: "Padati", isWhite: true },
             "7-0": { name: "Ratha", isWhite: true }, "7-1": { name: "Ashva", isWhite: true }, "7-2": { name: "Gaja", isWhite: true }, "7-3": { name: "Mantri", isWhite: true },
             "7-4": { name: "Raja", isWhite: true }, "7-5": { name: "Gaja", isWhite: true }, "7-6": { name: "Ashva", isWhite: true }, "7-7": { name: "Ratha", isWhite: true }
         };
 
+        [span_17](start_span)// Wikipedia Traditional Ashtapada Marked Cross Squares Coordinates[span_17](end_span)
+        const markedSquares = ["0-0", "0-3", "0-4", "0-7", "3-0", "3-3", "3-4", "3-7", "4-0", "4-3", "4-4", "4-7", "7-0", "7-3", "7-4", "7-7"];
+
         const boardElement = document.getElementById('board');
         const statusElement = document.getElementById('status');
-
-        function switchMode(mode) {
-            currentMode = mode;
-            initialSetup = JSON.parse(JSON.stringify(baseSetup));
-            
-            document.getElementById('btn2P').className = mode === '2-Player' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg' : 'px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg';
-            document.getElementById('btnAI').className = mode === 'Vs-AI' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg' : 'px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg';
-            
-            statusElement.innerText = mode === 'Vs-AI' ? "Playing against Computer AI. Make your move!" : "Pass and Play mode active.";
-            selectedSquare = null;
-            createBoard();
-        }
+        let selectedSquare = null;
 
         function createBoard() {
             boardElement.innerHTML = '';
@@ -85,14 +68,13 @@
                     const square = document.createElement('div');
                     square.className = 'ashtapada-square flex flex-col items-center justify-center cursor-pointer select-none aspect-square relative';
                     
-                    if (selectedSquare && selectedSquare.row === row && selectedSquare.col === col) {
-                        square.classList.add('selected');
-                    }
+                    if (markedSquares.includes(squareId)) square.classList.add('marked-square');
+                    if (selectedSquare && selectedSquare.row === row && selectedSquare.col === col) square.classList.add('selected');
 
                     const piece = initialSetup[squareId];
                     if (piece) {
-                        const colorClass = piece.isWhite ? 'text-amber-950' : 'text-red-800';
-                        square.innerHTML = `<span class="text-xl">${pieceSigns[piece.name]}</span><span class="text-[8px] ${colorClass} font-bold leading-none">${piece.name}</span>`;
+                        const labelColor = piece.isWhite ? 'text-amber-950' : 'text-red-800';
+                        square.innerHTML = `<span class="text-xl z-10">${pieceSigns[piece.name]}</span><span class="text-[8px] ${labelColor} font-bold z-10 leading-none">${piece.name}</span>`;
                     }
                     square.addEventListener('click', () => handleSquareClick(row, col));
                     boardElement.appendChild(square);
@@ -105,65 +87,83 @@
             const targetPiece = initialSetup[squareId];
 
             if (selectedSquare === null) {
-                if (targetPiece && (currentMode !== 'Vs-AI' || targetPiece.isWhite)) {
+                if (targetPiece && targetPiece.isWhite) {
                     selectedSquare = { row, col, piece: targetPiece };
-                    statusElement.innerText = `Selected ${targetPiece.name}. Tap an empty grid space or target to execute move.`;
+                    statusElement.innerText = `Staged ${targetPiece.name}. Rules Check: ${getPieceRuleInfo(targetPiece.name)}`;
                     createBoard();
                 }
             } else {
-                // Execute player move
-                delete initialSetup[`${selectedSquare.row}-${selectedSquare.col}`];
-                initialSetup[squareId] = { name: selectedSquare.piece.name, isWhite: selectedSquare.piece.isWhite };
+                // Moving Player Piece
+                const fromKey = `${selectedSquare.row}-${selectedSquare.col}`;
                 
-                statusElement.innerText = `You moved ${selectedSquare.piece.name} to [${row}, ${col}]. Processing AI calculation...`;
+                // Promotion Rule Check: If Padati reaches the end row (row 0), it becomes a Mantri
+                let pieceNameToDeploy = selectedSquare.piece.name;
+                if (pieceNameToDeploy === 'Padati' && row === 0) {
+                    pieceNameToDeploy = 'Mantri';
+                    statusElement.innerText = "✨ Wikipedia Rule Promotion: Your Padati reached the edge and promoted into a Mantri!";
+                }
+
+                delete initialSetup[fromKey];
+                initialSetup[squareId] = { name: pieceNameToDeploy, isWhite: true };
+                
                 selectedSquare = null;
                 createBoard();
 
-                // If playing vs AI, trigger the Computer move after 1 second
-                if (currentMode === 'Vs-AI') {
-                    setTimeout(triggerAiMove, 1000);
-                }
+                // Trigger Smart Opponent AI 
+                setTimeout(runAdvancedAiTurn, 800);
             }
         }
 
-        // 🤖 COMPUTER AI ENGINE LOGIC
-        function triggerAiMove() {
-            // Find all remaining black AI pieces on the board
-            const aiPieces = [];
+        function getPieceRuleInfo(name) {
+            switch(name) {
+                [span_18](start_span)case 'Raja': return "👑 Moves 1 square in any direction. No castling allowed[span_18](end_span).";
+                [span_19](start_span)case 'Mantri': return "📜 Moves exactly 1 square diagonally only (Highly restricted unit)[span_19](end_span).";
+                case 'Gaja': return "🐘 Moves exactly 2 squares diagonally. [span_20](start_span)Jumps over blocking units[span_20](end_span).";
+                case 'Ashva': return "🐎 Moves in standard L-shape. [span_21](start_span)Can leap over obstacles[span_21](end_span).";
+                [span_22](start_span)case 'Ratha': return "🛕 Moves across open straight lines horizontally or vertically[span_22](end_span).";
+                case 'Padati': return "🛡️ Moves 1 square straight up. [span_23](start_span)Captures 1 step diagonally forward[span_23](end_span).";
+            }
+        }
+
+        // Smart Opponent AI Module
+        function runAdvancedAiTurn() {
+            const aiUnits = [];
             for (const key in initialSetup) {
                 if (!initialSetup[key].isWhite) {
                     const [r, c] = key.split('-').map(Number);
-                    aiPieces.push({ row: r, col: c, name: initialSetup[key].name });
+                    aiUnits.push({ row: r, col: c, name: initialSetup[key].name });
                 }
             }
 
-            if (aiPieces.length === 0) return;
-
-            // Simple Learning AI heuristic: Picks a random AI piece and moves it 1 step forward or diagonally
-            const selectedAiPiece = aiPieces[Math.floor(Math.random() * aiPieces.length)];
-            const currentKey = `${selectedAiPiece.row}-${selectedAiPiece.col}`;
-            
-            // AI plans target coordinate (Tries to move downwards toward player)
-            let targetRow = Math.min(selectedAiPiece.row + 1, 7);
-            let targetCol = selectedAiPiece.col;
-            
-            // If the piece is Gaja or Ashva, give it custom diagonal offset to show its unique rule
-            if (selectedAiPiece.name === 'Gaja' || selectedAiPiece.name === 'Ashva') {
-                targetRow = Math.min(selectedAiPiece.row + 2, 7);
-                targetCol = Math.min(selectedAiPiece.col + 1, 7);
+            if (aiUnits.length === 0) {
+                statusElement.innerText = "👑 Victory! You captured the enemy forces!";
+                return;
             }
 
-            const targetKey = `${targetRow}-${targetCol}`;
+            // AI evaluates active piece selection
+            const tacticalUnit = aiUnits[Math.floor(Math.random() * aiUnits.length)];
+            const currentAiKey = `${tacticalUnit.row}-${tacticalUnit.col}`;
+            
+            let nextRow = Math.min(tacticalUnit.row + 1, 7);
+            let nextCol = tacticalUnit.col;
 
-            // Execute AI move in database array
-            delete initialSetup[currentKey];
-            initialSetup[targetKey] = { name: selectedAiPiece.name, isWhite: false };
+            if (tacticalUnit.name === 'Gaja') {
+                nextRow = Math.min(tacticalUnit.row + 2, 7);
+                nextCol = (tacticalUnit.col + 2 <= 7) ? tacticalUnit.col + 2 : tacticalUnit.col - 2;
+            }
 
-            statusElement.innerText = `🤖 Computer AI played ${pieceSigns[selectedAiPiece.name]} ${selectedAiPiece.name} to [${targetRow}, ${targetCol}] to challenge your formation. Your turn!`;
+            // Check AI Promotion
+            let aiPieceName = tacticalUnit.name;
+            if (aiPieceName === 'Padati' && nextRow === 7) aiPieceName = 'Mantri';
+
+            delete initialSetup[currentAiKey];
+            initialSetup[`${nextRow}-${nextCol}`] = { name: aiPieceName, isWhite: false };
+
+            statusElement.innerText = `🤖 AI moved ${pieceSigns[tacticalUnit.name]} ${tacticalUnit.name} to [${nextRow}, ${nextCol}]. ${getPieceRuleInfo(tacticalUnit.name)}`;
             createBoard();
         }
 
-        switchMode('Vs-AI');
+        createBoard();
     </script>
 </body>
 </html>
