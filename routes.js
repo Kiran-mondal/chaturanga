@@ -4,21 +4,33 @@ import { isValidMove } from './rules.js';
 
 const router = express.Router();
 
-// 1. Create a new match session inside Neon DB
+// ১. নতুন ম্যাচ সেশন শুরু করা এবং ডাটাবেজে টেবিল তৈরি নিশ্চিত করা
 router.post('/match/start', async (req, res) => {
-  const { playerWhite, playerBlack } = req.body;
-  
-  // Starting setup layout for Chaturanga on an Ashtapada board
-  const initialBoardState = {
-    "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false },
-    "0-2": { name: "Gaja", isWhite: false },  "0-3": { name: "Mantri", isWhite: false },
-    "0-4": { name: "Raja", isWhite: false },   "0-5": { name: "Gaja", isWhite: false },
-    "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
-    "1-0": { name: "Padati", isWhite: false }, "1-1": { name: "Padati", isWhite: false },
-    // (Rest of the pawns and white pieces will be processed via AI / JSON mapping)
-  };
-
   try {
+    // লার্নিং ডেটা রাখার জন্য ডাটাবেজে টেবিল না থাকলে তা স্বয়ংক্রিয়ভাবে তৈরি হবে
+    await query(`
+      CREATE TABLE IF NOT EXISTS ai_learning_memory (
+        id SERIAL PRIMARY KEY,
+        piece_name VARCHAR(50),
+        target_coordinate VARCHAR(10),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await query(`
+      CREATE TABLE IF NOT EXISTS game_sessions (
+        id SERIAL PRIMARY KEY,
+        board_state JSONB,
+        status VARCHAR(20),
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    const initialBoardState = {
+      "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false },
+      "0-2": { name: "Gaja", isWhite: false },  "0-3": { name: "Raja", isWhite: false }
+    };
+
     const result = await query(
       'INSERT INTO game_sessions (board_state, status) VALUES ($1, $2) RETURNING id',
       [JSON.stringify(initialBoardState), 'ongoing']
@@ -29,34 +41,30 @@ router.post('/match/start', async (req, res) => {
   }
 });
 
-// 2. Submit a move, validate it using rules.js, and update Neon DB
-router.post('/match/move', async (req, res) => {
-  const { matchId, piece, fromRow, fromCol, toRow, toCol } = req.body;
-
+// ২. প্লেয়ারের নতুন নতুন চাল ও কৌশল ডাটাবেজে সেভ করার API Endpoint
+router.post('/ai/learn', async (req, res) => {
+  const { piece, coordinate } = req.body;
   try {
-    const matchRes = await query('SELECT board_state FROM game_sessions WHERE id = $1', [matchId]);
-    if (matchRes.rows.length === 0) return res.status(404).json({ error: "Match not found" });
-
-    const currentBoard = matchRes.rows[0].board_state;
-
-    // Check movement rule validity
-    const valid = isValidMove(piece, fromRow, fromCol, toRow, toCol, currentBoard);
-    if (!valid) return res.status(400).json({ error: "Illegal Chaturanga move executed" });
-
-    // Update internal board configuration matrix
-    delete currentBoard[`${fromRow}-${fromCol}`];
-    currentBoard[`${toRow}-${toCol}`] = { name: piece };
-
     await query(
-      'UPDATE game_sessions SET board_state = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
-      [JSON.stringify(currentBoard), matchId]
+      'INSERT INTO ai_learning_memory (piece_name, target_coordinate) VALUES ($1, $2)',
+      [piece, coordinate]
     );
+    // ডাটাবেজ থেকে এআই-এর এযাবৎকালের শেখা সব কৌশলের সংখ্যা আনা
+    const memoryCount = await query('SELECT COUNT(*) FROM ai_learning_memory');
+    res.json({ success: true, totalLearnedMoves: memoryCount.rows[0].count });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    res.json({ success: true, updatedBoard: currentBoard });
+// ৩. এআই-এর চিন্তা করার জন্য ডাটাবেজ থেকে শেখা মেমোরি লোড করা
+router.get('/ai/memory', async (req, res) => {
+  try {
+    const memoryRes = await query('SELECT piece_name, target_coordinate FROM ai_learning_memory ORDER BY id DESC LIMIT 50');
+    res.json({ success: true, tactics: memoryRes.rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 export default router;
-       
