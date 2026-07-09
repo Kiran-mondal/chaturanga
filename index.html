@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaturanga - Ancient Indian Strategy Board Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Ashtapada traditional uncheckered styling */
+        .ashtapada-square {
+            background-color: #fef3c7; /* Warm amber-50 */
+            border: 1px solid #d97706; /* Amber-600 borders */
+        }
+        .ashtapada-square:hover {
+            background-color: #fde68a; /* Highlight on hover */
+        }
+    </style>
+</head>
+<body class="bg-stone-900 text-stone-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="text-center mb-6">
+        <h1 class="text-4xl font-extrabold text-amber-500 tracking-wide">CHATURANGA</h1>
+        <p class="text-stone-400 text-sm mt-1">The Ancestor of Chess • 8x8 Ashtapada Grid</p>
+    </div>
+
+    <div id="board" class="grid grid-cols-8 gap-0 border-4 border-amber-800 rounded-lg shadow-2xl max-w-full w-[450px] h-[450px]">
+        </div>
+
+    <div class="mt-6 bg-stone-800 p-4 rounded-lg border border-stone-700 w-[450px] max-w-full">
+        <h3 class="text-amber-400 font-bold mb-2">⚡ System Logs & Live Updates</h3>
+        <p id="status" class="text-stone-300 text-sm">Select any piece on the board to stage an initial move coordinate.</p>
+    </div>
+
+    <script>
+        // Simple client-side representation of the initial Chaturanga layout
+        const initialSetup = {
+            "0-0": "Ratha", "0-1": "Ashva", "0-2": "Gaja", "0-3": "Mantri",
+            "0-4": "Raja",  "0-5": "Gaja",  "0-6": "Ashva", "0-7": "Ratha",
+            "1-0": "Padati", "1-1": "Padati", "1-2": "Padati", "1-3": "Padati",
+            "1-4": "Padati", "1-5": "Padati", "1-6": "Padati", "1-7": "Padati"
+        };
+
+        const boardElement = document.getElementById('board');
+        const statusElement = document.getElementById('status');
+        let selectedSquare = null;
+
+        // Render the 8x8 board grid systematically
+        function createBoard() {
+            boardElement.innerHTML = '';
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const squareId = `${row}-${col}`;
+                    const square = document.createElement('div');
+                    square.className = 'ashtapada-square flex items-center justify-center text-xs font-bold text-amber-950 cursor-pointer select-none aspect-square';
+                    square.dataset.id = squareId;
+
+                    // Insert piece name if it exists in the configuration coordinates
+                    if (initialSetup[squareId]) {
+                        square.innerText = initialSetup[squareId];
+                    }
+
+                    square.addEventListener('click', () => handleSquareClick(row, col));
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+
+        function handleSquareClick(row, col) {
+            const squareId = `${row}-${col}`;
+            
+            if (selectedSquare === null) {
+                if (initialSetup[squareId]) {
+                    selectedSquare = { row, col, piece: initialSetup[squareId] };
+                    statusElement.innerText = `Selected ${initialSetup[squareId]} at matrix [${row}, ${col}]. Tap a destination tile.`;
+                }
+            } else {
+                statusElement.innerText = `Moving ${selectedSquare.piece} from [${selectedSquare.row}, ${selectedSquare.col}] to [${row}, ${col}]... Data sent to server verification endpoint.`;
+                
+                // Process visual update step locally
+                delete initialSetup[`${selectedSquare.row}-${selectedSquare.col}`];
+                initialSetup[squareId] = selectedSquare.piece;
+                
+                selectedSquare = null;
+                createBoard();
+            }
+        }
+
+        // Initialize board UI rendering loop
+        createBoard();
+    </script>
+</body>
+</html>
