@@ -3,151 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaturanga - Animated Indian Heritage Engine</title>
+    <title>Chaturanga - 3D Ultra Premium Imperial Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* ব্যাকগ্রাউন্ড অ্যানিমেশন */
-        @keyframes ambientGlow {
-            0% { background-position: 0% 50%; opacity: 0.95; }
-            50% { background-position: 100% 50%; opacity: 0.85; }
-            100% { background-position: 0% 50%; opacity: 0.95; }
+        /* রাজকীয় মেটালিক ও থ্রি-ডি অ্যানিমেশন */
+        @keyframes dynamicGlow {
+            0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+            50% { background-position: 100% 50%; filter: hue-rotate(10deg); }
+            100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
         }
 
-        @keyframes goldPulse {
-            0% { border-color: #d97706; box-shadow: 0 0 5px rgba(217, 119, 6, 0.4); }
-            50% { border-color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.7); }
-            100% { border-color: #d97706; box-shadow: 0 0 5px rgba(217, 119, 6, 0.4); }
-        }
-
-        @keyframes captureWave {
-            0% { box-shadow: inset 0 0 0 4px #dc2626, 0 0 0px #dc2626; }
-            100% { box-shadow: inset 0 0 0 4px #dc2626, 0 0 12px 6px rgba(220, 38, 38, 0); }
+        @keyframes pieceFloat {
+            0% { transform: translateZ(20px) translateY(0px); }
+            50% { transform: translateZ(35px) translateY(-4px); filter: drop-shadow(0 15px 12px rgba(0,0,0,0.6)); }
+            100% { transform: translateZ(20px) translateY(0px); }
         }
 
         body {
-            background: radial-gradient(circle at center, #3a2010 0%, #120702 100%);
+            background: radial-gradient(circle at center, #2e1605 0%, #0a0401 100%);
             background-image: 
-                linear-gradient(rgba(36, 19, 9, 0.9), rgba(15, 7, 3, 0.96)),
+                linear-gradient(rgba(24, 11, 3, 0.85), rgba(10, 4, 1, 0.97)),
                 url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop');
             background-size: 200% 200%;
             background-attachment: fixed;
-            animation: ambientGlow 15s ease-in-out infinite;
+            animation: dynamicGlow 20s ease-in-out infinite;
+            perspective: 1200px; /* থ্রি-ডি গভীরতা */
         }
 
-        /* অষ্টপদ (Ashtapada) বোর্ড ও ঘর */
+        /* ৩ডি থিমযুক্ত অষ্টপদ বোর্ড কন্টেইনার */
+        .board-wrapper {
+            transform-style: preserve-3d;
+            transform: rotateX(22deg) rotateZ(0deg); /* বোর্ডকে সুন্দরভাবে ৩ডি অ্যাঙ্গেলে বাঁকানো */
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0,0,0,0.8);
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .board-wrapper:hover {
+            transform: rotateX(18deg) rotateZ(1deg); /* মাউস নিলে সামান্য থ্রি-ডি মুভমেন্ট */
+        }
+
+        /* প্রিমিয়াম মার্বেল ও চন্দন কাঠের ঘর */
         .ashtapada-square {
-            background-color: #f2e3c6; /* চন্দনের আভা */
-            border: 1px solid #9a3412; 
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: linear-gradient(145deg, #f7e7c4, #dfcd9f);
+            border: 1px solid #7c2d12;
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .ashtapada-square:hover {
-            background-color: #fef3c7 !important;
-            transform: scale(1.03);
-            z-index: 30;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: linear-gradient(145deg, #fffbeb, #fef3c7) !important;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            z-index: 50;
         }
         
-        /* প্রাচীন চিহ্নের (✕) ঘর */
         .marked-square::after {
             content: "✕";
             position: absolute;
-            color: #9a3412;
-            opacity: 0.3;
-            font-size: 2.2rem;
-            font-family: 'Georgia', serif;
+            color: #7c2d12;
+            opacity: 0.25;
+            font-size: 2.5rem;
+            font-weight: bold;
+            transform: translateZ(1px);
         }
         
-        /* সিলেক্টেড ঘর */
+        /* গর্জিয়াস গোল্ডেন সিলেকশন */
         .selected { 
-            background-color: #f59e0b !important; 
-            box-shadow: inset 0 0 15px #b45309;
+            background: linear-gradient(145deg, #fbbf24, #d97706) !important; 
+            box-shadow: 0 0 25px #f59e0b, inset 0 0 15px #7c2d12;
+            border-color: #fbbf24;
+        }
+
+        /* থ্রি-ডি ঘুঁটি ইফেক্ট */
+        .premium-piece {
+            transform: translateZ(20px);
+            filter: drop-shadow(0 8px 6px rgba(0,0,0,0.5));
+            transition: all 0.3s ease;
+        }
+
+        .selected .premium-piece {
+            animation: pieceFloat 1.8s ease-in-out infinite;
         }
         
-        /* সম্ভাব্য চালের মার্কার অ্যানিমেশন */
+        /* মুভ এবং ক্যাপচার লাইটিং */
         .possible-move-marker::before {
             content: "";
             position: absolute;
-            width: 14px;
-            height: 14px;
-            background-color: #059669;
+            width: 16px;
+            height: 16px;
+            background: #10b981;
             border-radius: 50%;
-            z-index: 20;
-            pointer-events: none;
-            box-shadow: 0 0 10px #10b981;
+            box-shadow: 0 0 15px 5px #10b981;
+            transform: translateZ(5px);
         }
         
-        /* আক্রমণ/কাটার ঘর */
         .possible-capture-marker {
-            animation: captureWave 1.2s infinite;
-            background-color: #fee2e2 !important;
+            background: linear-gradient(145deg, #fca5a5, #ef4444) !important;
+            box-shadow: 0 0 25px #ef4444, inset 0 0 15px #7c2d12 !important;
         }
 
-        /* হেরিটেজ কন্টেইনার */
         .heritage-card {
-            background: linear-gradient(135deg, #45220a 0%, #261103 100%);
-            border: 2px solid #d97706;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.75);
-        }
-
-        .active-turn-card {
-            animation: goldPulse 2.5s infinite;
-        }
-
-        .pop-up-bounce {
-            animation: transform 0.3s ease-out;
+            background: linear-gradient(135deg, #2e1405 0%, #170802 100%);
+            border: 2px solid #b45309;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
         }
     </style>
 </head>
 <body class="text-amber-100 min-h-screen flex flex-col items-center p-4 relative font-serif">
 
-    <div class="text-center my-3 select-none">
-        <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 tracking-widest drop-shadow-lg">चतुरङ्ग (CHATURANGA)</h1>
-        <p class="text-amber-500/70 text-xs mt-1 font-sans tracking-wider uppercase">The Animated Indian Rulebook & Path-Blocking Engine</p>
+    <div class="text-center my-4 select-none">
+        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 tracking-widest drop-shadow-2xl">चतुरङ्ग IMPERIAL</h1>
+        <p class="text-amber-500/80 text-xs mt-1 font-sans tracking-widest uppercase">3D Cinematic Path-Blocking Battlefield</p>
     </div>
 
-    <!-- 🎮 মোড সিলেকশন ইন্টারফেস -->
-    <div id="mode-panel" class="flex gap-4 mb-3 heritage-card active-turn-card p-2 rounded-xl w-[430px] max-w-full justify-center items-center">
-        <button id="btn2P" onclick="switchMode('2-Player')" class="px-3 py-2 text-xs font-bold bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition font-sans border border-amber-900/40">
-            👥 Pass & Play
+    <div id="mode-panel" class="flex gap-4 mb-6 heritage-card p-2 rounded-xl w-[440px] max-w-full justify-center items-center border-amber-500/50">
+        <button id="btn2P" onclick="switchMode('2-Player')" class="px-4 py-2.5 text-xs font-black bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition-all font-sans border border-amber-600/30 tracking-wider">
+            👥 PASS & PLAY
         </button>
-        <button id="btnAI" onclick="switchMode('Vs-AI')" class="px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer transition font-sans shadow-md shadow-amber-600/20">
-            🤖 VS Computer AI
+        <button id="btnAI" onclick="switchMode('Vs-AI')" class="px-4 py-2.5 text-xs font-black bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 rounded-lg cursor-pointer transition-all font-sans shadow-lg shadow-amber-600/30 tracking-wider">
+            🤖 VS COMPUTER AI
         </button>
-        <button onclick="triggerReset()" class="ml-2 px-2 py-2 text-xs font-bold bg-stone-950 text-amber-500 rounded-lg border border-amber-600/30 cursor-pointer hover:bg-amber-900/40 transition font-sans">
-            🔄 Restart
+        <button onclick="triggerReset()" class="ml-2 px-3 py-2.5 text-xs font-bold bg-stone-950 text-red-400 rounded-lg border border-red-900/40 cursor-pointer hover:bg-red-950/30 transition-all font-sans tracking-wider">
+            🔄 RESTART
         </button>
     </div>
 
-    <!-- ৮x৮ অষ্টপদ বোর্ড -->
-    <div id="board" class="grid grid-cols-8 gap-0 border-4 border-amber-800 rounded-lg shadow-2xl max-w-full w-[430px] h-[430px] relative bg-amber-950/40 overflow-hidden"></div>
+    <div class="mb-6">
+        <div id="board" class="board-wrapper grid grid-cols-8 gap-0 border-[6px] border-amber-900 rounded-xl max-w-full w-[430px] h-[430px] bg-stone-950"></div>
+    </div>
 
-    <!-- 📊 কবরখানা / কাটা যাওয়া ঘুঁটি (Graveyard) -->
-    <div class="mt-3 heritage-card p-3 rounded-lg w-[430px] max-w-full grid grid-cols-2 gap-4">
+    <div class="heritage-card p-4 rounded-xl w-[440px] max-w-full grid grid-cols-2 gap-4 border-amber-900/60">
         <div>
-            <h4 class="text-red-400 font-bold text-xs mb-1 font-sans">💀 Captured AI Armies (Black)</h4>
-            <div id="black-graveyard" class="flex flex-wrap gap-1 text-xl bg-stone-950/50 p-1 rounded min-h-[36px] border border-stone-900"></div>
+            <h4 class="text-red-400 font-black text-xs mb-1.5 font-sans tracking-wider uppercase">💀 AI Losses (Black)</h4>
+            <div id="black-graveyard" class="flex flex-wrap gap-1 text-2xl bg-stone-950/60 p-2 rounded-lg min-h-[44px] border border-stone-900 shadow-inner"></div>
         </div>
         <div>
-            <h4 class="text-amber-400 font-bold text-xs mb-1 font-sans">💀 Captured Your Armies (White)</h4>
-            <div id="white-graveyard" class="flex flex-wrap gap-1 text-xl bg-stone-950/50 p-1 rounded min-h-[36px] border border-stone-900"></div>
+            <h4 class="text-amber-400 font-black text-xs mb-1.5 font-sans tracking-wider uppercase">💀 Your Losses (White)</h4>
+            <div id="white-graveyard" class="flex flex-wrap gap-1 text-2xl bg-stone-950/60 p-2 rounded-lg min-h-[44px] border border-stone-900 shadow-inner"></div>
         </div>
     </div>
 
-    <!-- ⚡ আম্পায়ার লগস -->
-    <div class="mt-3 heritage-card p-3 rounded-lg w-[430px] max-w-full">
-        <h3 class="text-amber-400 font-bold mb-1 text-xs font-sans tracking-wide">⚡ Match Umpire Logs</h3>
-        <p id="status" class="text-amber-200/80 text-xs leading-relaxed font-sans">System Live. Welcome to the authentic Chaturanga arena.</p>
+    <div class="mt-4 heritage-card p-3 rounded-lg w-[440px] max-w-full border-amber-900/40">
+        <h3 class="text-amber-400 font-bold mb-1 text-xs font-sans tracking-widest uppercase">⚡ Imperial Court Records</h3>
+        <p id="status" class="text-amber-100/70 text-xs leading-relaxed font-sans">The 3D battlefield is set. Honor your ancestors.</p>
     </div>
 
-    <!-- 🏆 বিজয়ী ঘোষণার পপআপ মোডাল -->
-    <div id="gameOverModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
-        <div class="bg-stone-900 border-2 border-amber-500 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl pop-up-bounce">
-            <div id="modalIcon" class="text-5xl mb-2">🏆</div>
-            <h2 id="modalTitle" class="text-2xl font-black text-amber-500 tracking-wide uppercase">Victory!</h2>
-            <p id="modalDesc" class="text-stone-300 text-sm my-4 leading-relaxed font-sans"></p>
-            <button onclick="triggerReset()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-extrabold rounded-xl shadow-lg hover:from-amber-600 hover:to-amber-700 transition cursor-pointer text-sm tracking-wider uppercase font-sans">
-                🔄 Start New Match
+    <div id="gameOverModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-stone-950 border-2 border-amber-400 p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl">
+            <div id="modalIcon" class="text-6xl mb-3 filter drop-shadow-md">🏆</div>
+            <h2 id="modalTitle" class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-500 tracking-wide uppercase">Victory!</h2>
+            <p id="modalDesc" class="text-stone-400 text-sm my-5 leading-relaxed font-sans"></p>
+            <button onclick="triggerReset()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-stone-950 font-black rounded-xl shadow-xl hover:from-amber-600 hover:to-yellow-600 transition-all text-sm tracking-widest uppercase font-sans cursor-pointer">
+                🔄 Begin Next Campaign
             </button>
         </div>
     </div>
@@ -197,10 +204,10 @@
             resetInitialSetup();
             modalElement.classList.add('hidden');
             
-            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer font-sans shadow-md' : 'px-3 py-2 text-xs font-bold bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition font-sans border border-amber-900/40';
-            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer font-sans shadow-md' : 'px-3 py-2 text-xs font-bold bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition font-sans border border-amber-900/40';
+            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'px-4 py-2.5 text-xs font-black bg-amber-600 text-stone-950 rounded-lg cursor-pointer font-sans shadow-lg' : 'px-4 py-2.5 text-xs font-black bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition-all font-sans border border-amber-600/30';
+            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'px-4 py-2.5 text-xs font-black bg-amber-600 text-stone-950 rounded-lg cursor-pointer font-sans shadow-lg' : 'px-4 py-2.5 text-xs font-black bg-stone-900 text-amber-400 rounded-lg cursor-pointer hover:bg-stone-800 transition-all font-sans border border-amber-600/30';
             
-            statusElement.innerText = currentMode === 'Vs-AI' ? "Arena updated with animations. VS Computer AI Mode Active." : "Arena updated with animations. Pass & Play Friend Mode Active.";
+            statusElement.innerText = currentMode === 'Vs-AI' ? "Premium 3D Imperial Interface Initialized. VS AI Engine Online." : "Premium 3D Imperial Interface Initialized. Pass & Play Mode Active.";
             createBoard();
         }
 
@@ -234,17 +241,12 @@
                     
                 case 'Ratha': 
                     if (fromR !== toR && fromC !== toC) return false;
-                    
                     const stepR = fromR === toR ? 0 : (toR > fromR ? 1 : -1);
                     const stepC = fromC === toC ? 0 : (toC > fromC ? 1 : -1);
-                    
                     let checkR = fromR + stepR;
                     let checkC = fromC + stepC;
-                    
                     while (checkR !== toR || checkC !== toC) {
-                        if (initialSetup[`${checkR}-${checkC}`]) {
-                            return false; 
-                        }
+                        if (initialSetup[`${checkR}-${checkC}`]) return false; 
                         checkR += stepR;
                         checkC += stepC;
                     }
@@ -252,16 +254,12 @@
                     
                 case 'Ashva': 
                     return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
-                    
                 case 'Gaja': 
                     return rowDiff === 2 && colDiff === 2;
-                    
                 case 'Raja':
                     return rowDiff <= 1 && colDiff <= 1;
-                    
                 case 'Mantri':
                     return rowDiff === 1 && colDiff === 1;
-                    
                 default:
                     return false;
             }
@@ -271,17 +269,15 @@
             const validDestinations = [];
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
-                    if (checkLegalMove(piece, row, col, r, c)) {
-                        validDestinations.push(`${r}-${c}`);
-                    }
+                    if (checkLegalMove(piece, row, col, r, c)) validDestinations.push(`${r}-${c}`);
                 }
             }
             return validDestinations;
         }
 
         function updateGraveyardUI() {
-            document.getElementById('black-graveyard').innerHTML = capturedBlack.map(p => `<span>${pieceSigns[p]}</span>`).join(' ');
-            document.getElementById('white-graveyard').innerHTML = capturedWhite.map(p => `<span>${pieceSigns[p]}</span>`).join(' ');
+            document.getElementById('black-graveyard').innerHTML = capturedBlack.map(p => `<span class="filter drop-shadow-md">${pieceSigns[p]}</span>`).join(' ');
+            document.getElementById('white-graveyard').innerHTML = capturedWhite.map(p => `<span class="filter drop-shadow-md">${pieceSigns[p]}</span>`).join(' ');
         }
 
         function createBoard() {
@@ -305,8 +301,13 @@
 
                     const piece = initialSetup[squareId];
                     if (piece) {
-                        const labelColor = piece.isWhite ? 'text-amber-950' : 'text-red-950';
-                        square.innerHTML = `<span class="text-2xl z-10 filter drop-shadow-sm transform transition duration-300 hover:scale-110">${pieceSigns[piece.name]}</span><span class="text-[8px] ${labelColor} font-bold z-10 leading-none font-sans mt-0.5">${piece.name}</span>`;
+                        const labelColor = piece.isWhite ? 'text-amber-950 font-black' : 'text-red-950 font-black';
+                        square.innerHTML = `
+                            <div class="premium-piece flex flex-col items-center justify-center">
+                                <span class="text-3xl z-10">${pieceSigns[piece.name]}</span>
+                                <span class="text-[8px] ${labelColor} z-10 tracking-tighter leading-none mt-0.5 font-sans">${piece.name.toUpperCase()}</span>
+                            </div>
+                        `;
                     }
                     square.addEventListener('click', () => handleSquareClick(row, col));
                     boardElement.appendChild(square);
@@ -317,7 +318,6 @@
 
         async function handleSquareClick(row, col) {
             if (isGameOver) return;
-
             const squareId = `${row}-${col}`;
             const targetPiece = initialSetup[squareId];
 
@@ -335,7 +335,7 @@
                 const isLegal = checkLegalMove(selectedSquare.piece, selectedSquare.row, selectedSquare.col, row, col);
                 
                 if (!isLegal) {
-                    statusElement.innerText = `❌ Invalid Move! Try again.`;
+                    statusElement.innerText = `🏛️ Tactically Impossible! Choose a legal path.`;
                     selectedSquare = null;
                     highlightedMoves = [];
                     createBoard();
@@ -348,7 +348,7 @@
                         if (targetPiece.name === 'Raja') {
                             isGameOver = true;
                             createBoard();
-                            showEndGameModal("Game Over", "AI Captured your Raja! Black Armies win the battlefield.", "💀");
+                            showEndGameModal("Defeat", "The AI legions captured your Raja. Your kingdom falls.", "💀");
                             return;
                         }
                     } else {
@@ -356,7 +356,7 @@
                         if (targetPiece.name === 'Raja') {
                             isGameOver = true;
                             createBoard();
-                            showEndGameModal("Congratulations!", "Victory! You captured the AI Raja successfully!", "👑");
+                            showEndGameModal("Imperial Victory", "Magnificent! You have conquered the AI Raja's throne!", "👑");
                             return;
                         }
                     }
@@ -375,11 +375,11 @@
                 if (isGameOver) return;
 
                 if (currentMode === 'Vs-AI') {
-                    statusElement.innerText = `AI is processing its counter-strategy instantly...`;
-                    setTimeout(runAdvancedAiTurn, 400);
+                    statusElement.innerText = `AI Imperial Engine is calculating countermeasures...`;
+                    setTimeout(runAdvancedAiTurn, 350);
                 } else {
                     isWhitesTurn = !isWhitesTurn;
-                    statusElement.innerText = `Turn switched to ${isWhitesTurn ? 'White' : 'Black'}.`;
+                    statusElement.innerText = `Command shifted to ${isWhitesTurn ? 'White Armies' : 'Black Armies'}.`;
                 }
             }
         }
@@ -410,7 +410,7 @@
 
             if (allLegalAiMoves.length === 0) {
                 isGameOver = true;
-                showEndGameModal("Match Dropped", "The battlefield is stalled. AI has no legal moves left. It's a DRAW!", "🏳️");
+                showEndGameModal("Stalemate", "The battlefield is locked. No legal moves remaining. It's a DRAW!", "🏳️");
                 return;
             }
 
@@ -422,13 +422,13 @@
                 if (bestMove.targetPiece.name === 'Raja') {
                     isGameOver = true;
                     createBoard();
-                    showEndGameModal("Game Over", "AI Captured your Raja! Black Armies win the battlefield.", "💀");
+                    showEndGameModal("Defeat", "The AI legions captured your Raja. Your kingdom falls.", "💀");
                     return;
                 } else {
-                    statusElement.innerText = `🤖 AI captured your ${bestMove.targetPiece.name}!`;
+                    statusElement.innerText = `⚔️ AI executed an offensive strike on your ${bestMove.targetPiece.name}!`;
                 }
             } else {
-                statusElement.innerText = `🤖 AI moved ${bestMove.piece.name} strictly to [${bestMove.toKey}].`;
+                statusElement.innerText = `🤖 AI advanced its ${bestMove.piece.name} strategically to [Row ${bestMove.toKey[0]}, Col ${bestMove.toKey[2]}].`;
             }
 
             delete initialSetup[bestMove.fromKey];
