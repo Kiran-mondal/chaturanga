@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaturanga - Anti-Cheat AI & Graveyard Engine</title>
+    <title>Chaturanga - Ultra Fast AI Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         .ashtapada-square {
@@ -38,10 +38,9 @@
 
     <div class="text-center my-2">
         <h1 class="text-4xl font-extrabold text-amber-500 tracking-wide">CHATURANGA</h1>
-        <p class="text-stone-400 text-xs mt-1">Strict Rule Anti-Cheat Engine</p>
+        <p class="text-stone-400 text-xs mt-1">Supercharged Instant Response Engine</p>
     </div>
 
-    <!-- 🎮 MODE SELECTION INTERFACE -->
     <div class="flex gap-4 mb-3 bg-stone-800 p-2 rounded-xl border border-stone-700 w-[430px] max-w-full justify-center">
         <button id="btn2P" onclick="switchMode('2-Player')" class="px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600">
             👥 Pass & Play
@@ -51,10 +50,8 @@
         </button>
     </div>
 
-    <!-- The 8x8 Ashtapada Board Container -->
     <div id="board" class="grid grid-cols-8 gap-0 border-4 border-amber-800 rounded-lg shadow-2xl max-w-full w-[430px] h-[430px] relative"></div>
 
-    <!-- 📊 CAPTURED PIECES GRAVEYARD (কাটা যাওয়া ঘুঁটির সারণি) -->
     <div class="mt-3 bg-stone-800 p-3 rounded-lg border border-stone-700 w-[430px] max-w-full grid grid-cols-2 gap-4">
         <div>
             <h4 class="text-red-400 font-bold text-xs mb-1">💀 Captured AI Armies (Black)</h4>
@@ -66,17 +63,15 @@
         </div>
     </div>
 
-    <!-- ⚡ SYSTEM LOGS -->
     <div class="mt-3 bg-stone-800 p-3 rounded-lg border border-stone-700 w-[430px] max-w-full">
         <h3 class="text-amber-400 font-bold mb-1 text-xs">⚡ Match Umpire Logs</h3>
-        <p id="status" class="text-stone-300 text-xs leading-relaxed">System Active. AI cheat-prevention mechanism successfully initialized.</p>
+        <p id="status" class="text-stone-300 text-xs leading-relaxed">System Live. Performance optimized for instant response.</p>
     </div>
 
     <script>
         const pieceSigns = { "Raja": "👑", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "🛡️" };
         let currentMode = "Vs-AI"; 
         
-        // কাটা যাওয়া ঘুঁটি জমা রাখার গ্লোবাল মেমোরি
         let capturedWhite = [];
         let capturedBlack = [];
 
@@ -107,7 +102,6 @@
             createBoard();
         }
 
-        // 🛑 STRICT RULES ENGINE
         function checkLegalMove(piece, fromR, fromC, toR, toC) {
             if (toR < 0 || toR > 7 || toC < 0 || toC > 7) return false;
             if (fromR === toR && fromC === toC) return false;
@@ -222,7 +216,6 @@
                     return;
                 }
 
-                // মানুষের চালে যদি এআই এর ঘুঁটি কাটা পড়ে, তা সারণিতে যোগ হবে
                 if (targetPiece) {
                     capturedBlack.push(targetPiece.name);
                 }
@@ -238,8 +231,8 @@
                 createBoard();
 
                 if (currentMode === 'Vs-AI') {
-                    statusElement.innerText = `You moved successfully. AI is scanning for strict legal counters...`;
-                    setTimeout(runAdvancedAiTurn, 800);
+                    statusElement.innerText = `Analyzing grid...`;
+                    setTimeout(runAdvancedAiTurn, 500); // রেসপন্স টাইম আরও ফাস্ট করা হলো
                 } else {
                     isWhitesTurn = !isWhitesTurn;
                     statusElement.innerText = `Turn switched.`;
@@ -247,28 +240,21 @@
             }
         }
 
-        // 🤖 ১০০% খাঁটি এবং বাগ-মুক্ত এআই ইঞ্জিন (যা কখনো ঘুঁটি চুরি করতে পারবে না)
+        // 🚀 সুপার-ফাস্ট অপ্টিমাইজড এআই লজিক (Infinite Loop ফিক্সড)
         function runAdvancedAiTurn() {
             const allLegalAiMoves = [];
 
-            // ১. এআই এর সব লিগ্যাল চাল একসাথে খুঁজে বের করা
             for (const key in initialSetup) {
                 if (!initialSetup[key].isWhite) {
                     const [fromR, fromC] = key.split('-').map(Number);
                     const piece = initialSetup[key];
-
-                    for (let toR = 0; r < 8; toR++) {
-                        for (let toC = 0; toC < 8; toC++) {
-                            // লুপ ট্র্যাকিং ফিক্সড
-                        }
-                    }
                     
-                    // বোর্ডের ভেতরে সব ঘরের জন্য বৈধতা চেক
+                    // ৬৪টি ঘরের জন্য অপ্টিমাইজড ক্লিন ডবল লুপ
                     for (let toR = 0; toR < 8; toR++) {
                         for (let toC = 0; toC < 8; toC++) {
                             if (checkLegalMove(piece, fromR, fromC, toR, toC)) {
                                 const target = initialSetup[`${toR}-${toC}`];
-                                let weight = target ? 10 : 1; // ঘুঁটি কাটার সুযোগ থাকলে তাকে প্রাধান্য দেবে
+                                let weight = target ? 10 : 1; 
                                 allLegalAiMoves.push({ fromKey: key, toKey: `${toR}-${toC}`, piece: piece, weight: weight, targetPiece: target });
                             }
                         }
@@ -276,25 +262,22 @@
                 }
             }
 
-            // যদি এআই কোনো বৈধ চাল খুঁজে না পায়, সে পাস করবে (কিন্তু কোনো ঘুঁটি ডিলিট করতে পারবে না!)
             if (allLegalAiMoves.length === 0) {
-                statusElement.innerText = "🏳️ AI found no legal moves! It is forced to skip its turn.";
+                statusElement.innerText = "🏳️ AI found no legal moves! Turn skipped.";
                 return;
             }
 
-            // বেশি পয়েন্টের চাল বা ঘুঁটি কাটার চাল ফিল্টার করা
+            // সেরা চাল নির্ধারণ
             allLegalAiMoves.sort((a, b) => b.weight - a.weight);
             const bestMove = allLegalAiMoves[0]; 
 
-            // যদি এআই আপনার কোনো ঘুঁটি কাটে, তবেই তা সারণিতে জমা হবে!
             if (bestMove.targetPiece) {
                 capturedWhite.push(bestMove.targetPiece.name);
                 statusElement.innerText = `🤖 AI strictly captured your ${bestMove.targetPiece.name}!`;
             } else {
-                statusElement.innerText = `🤖 AI strictly moved ${bestMove.piece.name} from ${bestMove.fromKey} to ${bestMove.toKey}.`;
+                statusElement.innerText = `🤖 AI moved ${bestMove.piece.name} safely to [${bestMove.toKey}].`;
             }
 
-            // বোর্ড আপডেট
             delete initialSetup[bestMove.fromKey];
             initialSetup[bestMove.toKey] = { name: bestMove.piece.name, isWhite: false };
 
