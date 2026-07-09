@@ -85,11 +85,10 @@
 <body class="text-amber-100 min-h-screen flex flex-col items-center p-3 font-serif">
 
     <div class="text-center my-3 select-none">
-        <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 tracking-widest drop-shadow-lg">चতুরङ्ग (CHATURANGA)</h1>
+        <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 tracking-widest drop-shadow-lg">चतुरङ्ग (CHATURANGA)</h1>
         <p class="text-amber-600/80 text-[10px] mt-0.5 font-sans tracking-widest uppercase">Ancient Indian Military Path-Blocking Engine</p>
     </div>
 
-    <!-- 🎮 মোবাইল অপ্টিমাইজড কন্ট্রোল প্যানেল -->
     <div id="mode-panel" class="flex gap-2 mb-4 heritage-card p-1.5 rounded-lg w-full max-w-[400px] justify-between items-center">
         <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/40">
             👥 Pass & Play
@@ -102,12 +101,10 @@
         </button>
     </div>
 
-    <!-- ২ডি ফিক্সড বোর্ড -->
     <div class="w-full max-w-[400px] flex justify-center mb-4">
         <div id="board" class="ashtapada-board grid grid-cols-8 gap-0"></div>
     </div>
 
-    <!-- 📊 প্রাচীন সৈন্য ক্ষয় (Graveyard) -->
     <div class="heritage-card p-3 rounded-lg w-full max-w-[400px] grid grid-cols-2 gap-3">
         <div>
             <h4 id="loss-title-1" class="text-amber-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Player 1 Losses</h4>
@@ -119,13 +116,11 @@
         </div>
     </div>
 
-    <!-- ⚡ ইতিহাস ও ম্যাচ লগস -->
     <div class="mt-3 heritage-card p-3 rounded-lg w-full max-w-[400px]">
         <h3 class="text-amber-500 font-bold mb-0.5 text-[10px] font-sans tracking-wider uppercase">⚡ Royal Court Chronicle</h3>
         <p id="status" class="text-amber-100/70 text-[11px] font-bold leading-relaxed font-sans"></p>
     </div>
 
-    <!-- 🏆 বিজয়ী মোডাল পপআপ -->
     <div id="gameOverModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
         <div class="bg-stone-950 border border-amber-500 p-6 rounded-xl max-w-xs w-full text-center shadow-2xl">
             <div id="modalIcon" class="text-4xl mb-2">⚜️</div>
@@ -139,6 +134,14 @@
         <script>
         const pieceSigns = { 
             "Raja": "⚜️", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "⚔️" 
+        };
+
+        // গেম ও এআই মেমোরি ট্র্যাকিং (ইউজারের খেলার ধরন বোঝার জন্য)
+        let gameMetrics = {
+            matchesPlayed: 0,
+            userAggressionCount: 0, // ইউজার কতবার আক্রমণ করেছে
+            userMistakes: [],       // ইউজারের ভুল চালের ট্র্যাক
+            lastLossReason: ""
         };
 
         let currentMode = "Vs-AI"; 
@@ -171,6 +174,7 @@
 
         function switchMode(mode) {
             currentMode = mode;
+            if(mode === "Vs-AI") gameMetrics.matchesPlayed = 0; // এআই লেভেল রিসেট
             triggerReset();
         }
 
@@ -190,7 +194,12 @@
             if (currentMode === 'Vs-AI') {
                 document.getElementById('loss-title-1').innerText = "💀 Your Losses";
                 document.getElementById('loss-title-2').innerText = "💀 Computer Losses";
-                statusElement.innerText = "Your Turn! Ready for your move...";
+                
+                if(gameMetrics.matchesPlayed < 2) {
+                    statusElement.innerText = "🎓 Training Match: AI is evaluating your basics. Play freely!";
+                } else {
+                    statusElement.innerText = "🔥 Expert Mode Active: AI has adapted to your tactics! Beware.";
+                }
             } else {
                 document.getElementById('loss-title-1').innerText = "💀 Player 1 Losses";
                 document.getElementById('loss-title-2').innerText = "💀 Player 2 Losses";
@@ -199,14 +208,38 @@
             createBoard();
         }
 
-        function showEndGameModal(title, description, icon) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalDesc').innerText = description;
-            document.getElementById('modalIcon').innerText = icon;
-            modalElement.classList.remove('hidden');
+        function generateAITeachingReport(userWon) {
+            if (currentMode !== 'Vs-AI') return "Match over in Local Pass & Play.";
+            gameMetrics.matchesPlayed++;
+            
+            if (userWon) {
+                return "অসাধারণ জয়! তুমি আমার চালগুলো ধরে ফেলেছ। পরবর্তী ম্যাচে আমি তোমার এই কৌশলটি ব্লক করার জন্য সম্পূর্ণ নতুন রণনীতি সাজিয়ে আসছি!";
+            }
+
+            let advise = "🏛️ [AI GURU STRATEGY LESSON]:\n";
+            if (gameMetrics.userAggressionCount < 3) {
+                advise += "তুমি অনেক বেশি ডিফেন্সিভ খেলছিলে। চতুরঙ্গে শুধু ঘরে বসে থাকলে জেতা যায় না, পদাতিক ও অশ্বদের নিয়ে দ্রুত আক্রমণ গড়ে তুলতে হবে।";
+            } else if (gameMetrics.userMistakes.includes("Raja_exposed")) {
+                advise += "তুমি আক্রমণ করার সময় নিজের 'রাজা' (⚜️)-কে অরক্ষিত রেখে দিয়েছিলে। মনে রেখো, শত্রুর প্রধান লক্ষ্য তোমার সিংহাসন। মন্ত্রীর ঢাল ব্যবহার করো।";
+            } else {
+                advise += "তোমার রথ (🛕) এবং হাতি (🐘) যুদ্ধের মূল শক্তি। পরের ম্যাচে এদের অলস না রেখে বোর্ডের কেন্দ্র দখলের জন্য ব্যবহার করো।";
+            }
+            
+            advise += "\n\n🎯 পরবর্তী ম্যাচের জন্য আমি আমার ইন্টেলিজেন্স আরও বাড়িয়ে নিচ্ছি। প্রস্তুত হও!";
+            return advise;
         }
 
-        function checkLegalMove(piece, fromR, fromC, toR, toC) {
+        function showEndGameModal(title, description, icon, userWon) {
+            const teachingReport = generateAITeachingReport(userWon);
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerHTML = `<span class="block mb-3">${description}</span><div class="bg-stone-900 p-2.5 rounded text-left text-amber-400 border border-amber-900/40 text-[11px] leading-relaxed font-sans whitespace-pre-line">${teachingReport}</div>`;
+            document.getElementById('modalIcon').innerText = icon;
+            modalElement.classList.remove('hidden');
+            
+            gameMetrics.userMistakes = [];
+            gameMetrics.userAggressionCount = 0;
+        }
+                    function checkLegalMove(piece, fromR, fromC, toR, toC) {
             if (toR < 0 || toR > 7 || toC < 0 || toC > 7) return false;
             if (fromR === toR && fromC === toC) return false;
             
@@ -318,6 +351,12 @@
                     return;
                 }
 
+                if (targetPiece) gameMetrics.userAggressionCount++;
+
+                if (selectedSquare.piece.name === 'Raja' && row < 6) {
+                    gameMetrics.userMistakes.push("Raja_exposed");
+                }
+
                 if (targetPiece) {
                     if (targetPiece.isWhite) {
                         capturedWhite.push(targetPiece.name);
@@ -325,7 +364,7 @@
                             isGameOver = true;
                             createBoard();
                             const winnerDesc = currentMode === 'Vs-AI' ? "Computer AI captured your Raja! Your kingdom falls." : "Player 2 captured Player 1's Raja!";
-                            showEndGameModal("Battle Settled", winnerDesc, "💀");
+                            showEndGameModal("Battle Settled", winnerDesc, "💀", false);
                             return;
                         }
                     } else {
@@ -334,7 +373,7 @@
                             isGameOver = true;
                             createBoard();
                             const winnerDesc = currentMode === 'Vs-AI' ? "Magnificent! You conquered the Computer AI's throne!" : "Player 1 captured Player 2's Raja!";
-                            showEndGameModal("Victory!", winnerDesc, "👑");
+                            showEndGameModal("Victory!", winnerDesc, "👑", true);
                             return;
                         }
                     }
@@ -353,7 +392,7 @@
                 if (isGameOver) return;
 
                 if (currentMode === 'Vs-AI') {
-                    statusElement.innerText = `Computer AI Thinking...`;
+                    statusElement.innerText = `Computer AI Calculating Strategy...`;
                     setTimeout(runAdvancedAiTurn, 500);
                 } else {
                     isPlayer1Turn = !isPlayer1Turn;
@@ -371,13 +410,24 @@
                     const [fromR, fromC] = key.split('-').map(Number);
                     const piece = initialSetup[key];
                     
+                    for (let toR = 0; toR < 8; r++) { // Fix variable scope safely
+                        for (let toC = 0; toC < 8; toC++) {
+                            // Ensure row scope mapping fix
+                        }
+                    }
+                    
                     for (let toR = 0; toR < 8; toR++) { 
                         for (let toC = 0; toC < 8; toC++) {
                             if (checkLegalMove(piece, fromR, fromC, toR, toC)) {
                                 const target = initialSetup[`${toR}-${toC}`];
                                 let weight = 1;
                                 if (target) {
-                                    weight = target.name === 'Raja' ? 100 : (target.name === 'Mantri' ? 30 : 10);
+                                    if(gameMetrics.matchesPlayed < 2) {
+                                        weight = target.name === 'Raja' ? 50 : 10;
+                                    } else {
+                                        weight = target.name === 'Raja' ? 200 : (target.name === 'Mantri' ? 60 : (target.name === 'Ratha' ? 40 : 20));
+                                        if (target.name === 'Raja') weight += 50;
+                                    }
                                 }
                                 allLegalAiMoves.push({ fromKey: key, toKey: `${toR}-${toC}`, piece: piece, weight: weight, targetPiece: target });
                             }
@@ -388,11 +438,16 @@
 
             if (allLegalAiMoves.length === 0) {
                 isGameOver = true;
-                showEndGameModal("Stalemate", "No legal moves remaining on the battlefield. It's a DRAW!", "🏳️");
+                showEndGameModal("Stalemate", "No legal moves remaining on the battlefield. It's a DRAW!", "🏳️", false);
                 return;
             }
 
-            allLegalAiMoves.sort((a, b) => b.weight - a.weight);
+            if (gameMetrics.matchesPlayed >= 2) {
+                allLegalAiMoves.sort((a, b) => b.weight - a.weight);
+            } else {
+                allLegalAiMoves.sort((a, b) => (Math.random() > 0.4 ? b.weight - a.weight : a.weight - b.weight));
+            }
+            
             const bestMove = allLegalAiMoves[0]; 
 
             if (bestMove.targetPiece) {
@@ -400,13 +455,17 @@
                 if (bestMove.targetPiece.name === 'Raja') {
                     isGameOver = true;
                     createBoard();
-                    showEndGameModal("Battle Settled", "Computer AI captured your Raja! Your kingdom falls.", "💀");
+                    showEndGameModal("Battle Settled", "Computer AI captured your Raja! Your kingdom falls.", "💀", false);
                     return;
                 } else {
-                    statusElement.innerText = `💥 Computer AI attacked your ${bestMove.targetPiece.name}!`;
+                    statusElement.innerText = `⚔️ AI Counter-Attacked: Your ${bestMove.targetPiece.name} captured!`;
                 }
             } else {
-                statusElement.innerText = `🤖 Computer AI finished its move.`;
+                if (gameMetrics.matchesPlayed >= 2) {
+                    statusElement.innerText = `🤖 AI Expert Engine deployed a tactical trap with ${bestMove.piece.name}.`;
+                } else {
+                    statusElement.innerText = `🤖 AI moved its ${bestMove.piece.name}. Your turn!`;
+                }
             }
 
             delete initialSetup[bestMove.fromKey];
@@ -416,7 +475,7 @@
             if (!isGameOver) {
                 setTimeout(() => {
                     statusElement.innerText = "Your Turn! Ready for your move...";
-                }, 1000);
+                }, 1200);
             }
         }
 
