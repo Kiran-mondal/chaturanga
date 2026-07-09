@@ -32,26 +32,37 @@
         .possible-capture-marker {
             box-shadow: inset 0 0 0 4px rgba(239, 68, 68, 0.8) !important;
         }
+        /* পপ-আপ অ্যানিমেশন */
+        .pop-up-bounce {
+            animation: transform 0.3s ease-out;
+        }
     </style>
 </head>
-<body class="bg-stone-900 text-stone-100 min-h-screen flex flex-col items-center p-4">
+<body class="bg-stone-900 text-stone-100 min-h-screen flex flex-col items-center p-4 relative">
 
     <div class="text-center my-2">
         <h1 class="text-4xl font-extrabold text-amber-500 tracking-wide">CHATURANGA</h1>
-        <p class="text-stone-400 text-xs mt-1">Strict Historical Rulebook & Anti-Bug Engine</p>
+        <p class="text-stone-400 text-xs mt-1">Strict Historical Rulebook & Master UI Engine</p>
     </div>
 
-    <div class="flex gap-4 mb-3 bg-stone-800 p-2 rounded-xl border border-stone-700 w-[430px] max-w-full justify-center">
+    <!-- 🎮 MODE SELECTION INTERFACE -->
+    <div class="flex gap-4 mb-3 bg-stone-800 p-2 rounded-xl border border-stone-700 w-[430px] max-w-full justify-center items-center">
         <button id="btn2P" onclick="switchMode('2-Player')" class="px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600">
             👥 Pass & Play
         </button>
         <button id="btnAI" onclick="switchMode('Vs-AI')" class="px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer">
             🤖 VS Computer AI
         </button>
+        <!-- 🔄 অলওয়েজ দৃশ্যমান কুইক রিস্টার্ট বাটন -->
+        <button onclick="triggerReset()" class="ml-2 px-2 py-2 text-xs font-bold bg-stone-900 text-amber-500 rounded-lg border border-amber-500/30 cursor-pointer hover:bg-stone-950">
+            🔄 Restart
+        </button>
     </div>
 
+    <!-- The 8x8 Ashtapada Board Container -->
     <div id="board" class="grid grid-cols-8 gap-0 border-4 border-amber-800 rounded-lg shadow-2xl max-w-full w-[430px] h-[430px] relative"></div>
 
+    <!-- 📊 CAPTURED PIECES GRAVEYARD -->
     <div class="mt-3 bg-stone-800 p-3 rounded-lg border border-stone-700 w-[430px] max-w-full grid grid-cols-2 gap-4">
         <div>
             <h4 class="text-red-400 font-bold text-xs mb-1">💀 Captured AI Armies (Black)</h4>
@@ -63,40 +74,62 @@
         </div>
     </div>
 
+    <!-- ⚡ SYSTEM LOGS -->
     <div class="mt-3 bg-stone-800 p-3 rounded-lg border border-stone-700 w-[430px] max-w-full">
         <h3 class="text-amber-400 font-bold mb-1 text-xs">⚡ Match Umpire Logs</h3>
         <p id="status" class="text-stone-300 text-xs leading-relaxed">System Active. Welcome to the authentic Chaturanga arena.</p>
     </div>
 
+    <!-- 🏆 সুন্দর গেম ওভার / জয়ী হওয়ার ডাইনামিক পপ-আপ স্ক্রিন -->
+    <div id="gameOverModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div class="bg-stone-800 border-2 border-amber-500 p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl pop-up-bounce">
+            <div id="modalIcon" class="text-5xl mb-2">🏆</div>
+            <h2 id="modalTitle" class="text-2xl font-black text-amber-500 tracking-wide uppercase">Victory!</h2>
+            <p id="modalDesc" class="text-stone-300 text-sm my-4 leading-relaxed">Congratulations, you have captured the enemy Raja successfully!</p>
+            <button onclick="triggerReset()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-extrabold rounded-xl shadow-lg hover:from-amber-600 hover:to-amber-700 transition cursor-pointer text-sm tracking-wider uppercase">
+                🔄 Start New Match
+            </button>
+        </div>
+    </div>
+
     <script>
         const pieceSigns = { "Raja": "👑", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "🛡️" };
         let currentMode = "Vs-AI"; 
-        let isGameOver = false; // গেম শেষ ট্র্যাকিং ফ্ল্যাগ
+        let isGameOver = false; 
         
         let capturedWhite = [];
         let capturedBlack = [];
-
-        let initialSetup = {
-            "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false }, "0-2": { name: "Gaja", isWhite: false }, "0-3": { name: "Raja", isWhite: false },
-            "0-4": { name: "Mantri", isWhite: false }, "0-5": { name: "Gaja", isWhite: false }, "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
-            "1-0": { name: "Padati", isWhite: false }, "1-1": { name: "Padati", isWhite: false }, "1-2": { name: "Padati", isWhite: false }, "1-3": { name: "Padati", isWhite: false },
-            "1-4": { name: "Padati", isWhite: false }, "1-5": { name: "Padati", isWhite: false }, "1-6": { name: "Padati", isWhite: false }, "1-7": { name: "Padati", isWhite: false },
-
-            "6-0": { name: "Padati", isWhite: true }, "6-1": { name: "Padati", isWhite: true }, "6-2": { name: "Padati", isWhite: true }, "6-3": { name: "Padati", isWhite: true },
-            "6-4": { name: "Padati", isWhite: true }, "6-5": { name: "Padati", isWhite: true }, "6-6": { name: "Padati", isWhite: true }, "6-7": { name: "Padati", isWhite: true },
-            "7-0": { name: "Ratha", isWhite: true }, "7-1": { name: "Ashva", isWhite: true }, "7-2": { name: "Gaja", isWhite: true }, "7-3": { name: "Mantri", isWhite: true },
-            "7-4": { name: "Raja", isWhite: true }, "7-5": { name: "Gaja", isWhite: true }, "7-6": { name: "Ashva", isWhite: true }, "7-7": { name: "Ratha", isWhite: true }
-        };
+        let initialSetup = {};
 
         const markedSquares = ["0-0", "0-3", "0-4", "0-7", "3-0", "3-3", "3-4", "3-7", "4-0", "4-3", "4-4", "4-7", "7-0", "7-3", "7-4", "7-7"];
         const boardElement = document.getElementById('board');
         const statusElement = document.getElementById('status');
+        const modalElement = document.getElementById('gameOverModal');
         let selectedSquare = null;
         let highlightedMoves = [];
         let isWhitesTurn = true; 
 
+        function resetInitialSetup() {
+            initialSetup = {
+                "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false }, "0-2": { name: "Gaja", isWhite: false }, "0-3": { name: "Raja", isWhite: false },
+                "0-4": { name: "Mantri", isWhite: false }, "0-5": { name: "Gaja", isWhite: false }, "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
+                "1-0": { name: "Padati", isWhite: false }, "1-1": { name: "Padati", isWhite: false }, "1-2": { name: "Padati", isWhite: false }, "1-3": { name: "Padati", isWhite: false },
+                "1-4": { name: "Padati", isWhite: false }, "1-5": { name: "Padati", isWhite: false }, "1-6": { name: "Padati", isWhite: false }, "1-7": { name: "Padati", isWhite: false },
+
+                "6-0": { name: "Padati", isWhite: true }, "6-1": { name: "Padati", isWhite: true }, "6-2": { name: "Padati", isWhite: true }, "6-3": { name: "Padati", isWhite: true },
+                "6-4": { name: "Padati", isWhite: true }, "6-5": { name: "Padati", isWhite: true }, "6-6": { name: "Padati", isWhite: true }, "6-7": { name: "Padati", isWhite: true },
+                "7-0": { name: "Ratha", isWhite: true }, "7-1": { name: "Ashva", isWhite: true }, "7-2": { name: "Gaja", isWhite: true }, "7-3": { name: "Mantri", isWhite: true },
+                "7-4": { name: "Raja", isWhite: true }, "7-5": { name: "Gaja", isWhite: true }, "7-6": { name: "Ashva", isWhite: true }, "7-7": { name: "Ratha", isWhite: true }
+            };
+        }
+
         function switchMode(mode) {
             currentMode = mode;
+            triggerReset();
+        }
+
+        // 🔄 সম্পূর্ণ গেম রিস্টার্ট করার মাস্টার ইঞ্জিন
+        function triggerReset() {
             selectedSquare = null;
             highlightedMoves = [];
             isWhitesTurn = true;
@@ -104,26 +137,24 @@
             capturedWhite = [];
             capturedBlack = [];
             
-            // নতুন করে রিসেট করা
-            initialSetup = {
-                "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false }, "0-2": { name: "Gaja", isWhite: false }, "0-3": { name: "Raja", isWhite: false },
-                "0-4": { name: "Mantri", isWhite: false }, "0-5": { name: "Gaja", isWhite: false }, "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
-                "1-0": { name: "Padati", isWhite: false }, "1-1": { name: "Padati", isWhite: false }, "1-2": { name: "Padati", isWhite: false }, "1-3": { name: "Padati", isWhite: false },
-                "1-4": { name: "Padati", isWhite: false }, "1-5": { name: "Padati", isWhite: false }, "1-6": { name: "Padati", isWhite: false }, "1-7": { name: "Padati", isWhite: false },
-                "6-0": { name: "Padati", isWhite: true }, "6-1": { name: "Padati", isWhite: true }, "6-2": { name: "Padati", isWhite: true }, "6-3": { name: "Padati", isWhite: true },
-                "6-4": { name: "Padati", isWhite: true }, "6-5": { name: "Padati", isWhite: true }, "6-6": { name: "Padati", isWhite: true }, "6-7": { name: "Padati", isWhite: true },
-                "7-0": { name: "Ratha", isWhite: true }, "7-1": { name: "Ashva", isWhite: true }, "7-2": { name: "Gaja", isWhite: true }, "7-3": { name: "Mantri", isWhite: true },
-                "7-4": { name: "Raja", isWhite: true }, "7-5": { name: "Gaja", isWhite: true }, "7-6": { name: "Ashva", isWhite: true }, "7-7": { name: "Ratha", isWhite: true }
-            };
+            resetInitialSetup();
+            modalElement.classList.add('hidden'); // পপ-আপ হাইড করা
             
-            document.getElementById('btn2P').className = mode === '2-Player' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer' : 'px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600';
-            document.getElementById('btnAI').className = mode === 'Vs-AI' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer' : 'px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600';
+            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer' : 'px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600';
+            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'px-3 py-2 text-xs font-bold bg-amber-600 text-stone-950 rounded-lg cursor-pointer' : 'px-3 py-2 text-xs font-bold bg-stone-700 text-stone-300 rounded-lg cursor-pointer hover:bg-stone-600';
             
-            statusElement.innerText = mode === 'Vs-AI' ? "New Game Started vs Computer AI." : "New 2-Player Pass & Play Game Started.";
+            statusElement.innerText = currentMode === 'Vs-AI' ? "Game completely reset. Ready for AI Match." : "Game completely reset. Ready for Pass & Play.";
             createBoard();
         }
 
-        // 🛑 সম্পূর্ণ ঐতিহাসিক নিয়মের মুভমেন্ট ভ্যালিডেটর
+        // 🏆 পপ-আপ স্ক্রিন শো করার মেকানিজম
+        function showEndGameModal(title, description, icon) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = description;
+            document.getElementById('modalIcon').innerText = icon;
+            modalElement.classList.remove('hidden');
+        }
+
         function checkLegalMove(piece, fromR, fromC, toR, toC) {
             if (toR < 0 || toR > 7 || toC < 0 || toC > 7) return false;
             if (fromR === toR && fromC === toC) return false;
@@ -135,25 +166,20 @@
             if (target && target.isWhite === piece.isWhite) return false;
 
             switch (piece.name) {
-                case 'Padati': // পদাতিক: শুধুমাত্র ১ ঘর সোজা সামনে, খাওয়ার জন্য ১ ঘর কোণাকুণি
+                case 'Padati':
                     const dir = piece.isWhite ? -1 : 1;
                     if (fromC === toC && toR === fromR + dir) return !target;
                     if (colDiff === 1 && toR === fromR + dir) return !!target;
                     return false;
-                    
-                case 'Ashva': // অশ্ব (ঘোড়া): নিখুঁত আড়াই ঘর এল-শেপ লাফ (২x১)
+                case 'Ashva':
                     return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
-                    
-                case 'Raja': // রাজা: যেকোনো দিকে মাত্র ১ ঘর
+                case 'Raja':
                     return rowDiff <= 1 && colDiff <= 1;
-                    
-                case 'Mantri': // মন্ত্রী: শুধুমাত্র কোণাকুণি ১ ঘর
+                case 'Mantri':
                     return rowDiff === 1 && colDiff === 1;
-                    
-                case 'Gaja': // গজ (হাতি): কোণাকুণি ঠিক ২ ঘর লাফিয়ে চলা (অন্য ঘুঁটি টপকাতে পারে)
+                case 'Gaja':
                     return rowDiff === 2 && colDiff === 2;
-                    
-                case 'Ratha': // রথ (নৌকা): সোজা বা পাশাপাশি যেকোনো দূরত্ব (পথ ফাঁকা থাকতে হবে)
+                case 'Ratha':
                     if (fromR !== toR && fromC !== toC) return false;
                     const sR = Math.min(fromR, toR), eR = Math.max(fromR, toR);
                     const sC = Math.min(fromC, toC), eC = Math.max(fromC, toC);
@@ -217,7 +243,7 @@
         }
 
         async function handleSquareClick(row, col) {
-            if (isGameOver) return; // গেম শেষ হলে ক্লিক কাজ করবে না
+            if (isGameOver) return;
 
             const squareId = `${row}-${col}`;
             const targetPiece = initialSetup[squareId];
@@ -245,19 +271,23 @@
                     return;
                 }
 
-                // 👑 রাজার মৃত্যুর লজিক ফিক্স
+                // 👑 রাজাকে খেয়ে ফেলার ইনস্ট্যান্ট ট্রিগার
                 if (targetPiece) {
                     if (targetPiece.isWhite) {
                         capturedWhite.push(targetPiece.name);
                         if (targetPiece.name === 'Raja') {
                             isGameOver = true;
-                            statusElement.innerHTML = "<span class='text-red-500 font-extrabold text-sm'>💀 GAME OVER! AI captured your Raja! Black Wins!</span>";
+                            createBoard();
+                            showEndGameModal("Game Over", "AI Captured your Raja! Black Armies win the battlefield.", "💀");
+                            return;
                         }
                     } else {
                         capturedBlack.push(targetPiece.name);
                         if (targetPiece.name === 'Raja') {
                             isGameOver = true;
-                            statusElement.innerHTML = "<span class='text-green-500 font-extrabold text-sm'>👑 VICTORY! You captured the enemy Raja! White Wins!</span>";
+                            createBoard();
+                            showEndGameModal("Congratulations!", "Victory! You captured the AI Raja successfully!", "👑");
+                            return;
                         }
                     }
                 }
@@ -284,7 +314,6 @@
             }
         }
 
-        // 🤖 সুপার ফাস্ট এবং ড্র-সাপোর্টেড এআই ইঞ্জিন
         function runAdvancedAiTurn() {
             if (isGameOver) return;
             const allLegalAiMoves = [];
@@ -300,7 +329,7 @@
                                 const target = initialSetup[`${toR}-${toC}`];
                                 let weight = 1;
                                 if (target) {
-                                    weight = target.name === 'Raja' ? 100 : 10; // রাজাকে কাটার সুযোগ থাকলে সর্বোচ্চ প্রাধান্য দেবে
+                                    weight = target.name === 'Raja' ? 100 : 10;
                                 }
                                 allLegalAiMoves.push({ fromKey: key, toKey: `${toR}-${toC}`, piece: piece, weight: weight, targetPiece: target });
                             }
@@ -309,10 +338,10 @@
                 }
             }
 
-            // 🏳️ ড্র লজিক ফিক্স: এআই চাল খুঁজে না পেলে ম্যাচ ড্রপ বা ড্র হবে
+            // 🏳️ ড্র হলে পপ-আপ ট্রেইলার
             if (allLegalAiMoves.length === 0) {
                 isGameOver = true;
-                statusElement.innerHTML = "<span class='text-amber-500 font-bold text-sm'>🏳️ MATCH DROPPED / DRAW! AI has no legal moves left.</span>";
+                showEndGameModal("Match Dropped", "The battlefield is stalled. AI has no legal moves left. It's a DRAW!", "🏳️");
                 return;
             }
 
@@ -323,7 +352,9 @@
                 capturedWhite.push(bestMove.targetPiece.name);
                 if (bestMove.targetPiece.name === 'Raja') {
                     isGameOver = true;
-                    statusElement.innerHTML = "<span class='text-red-500 font-extrabold text-sm'>💀 GAME OVER! AI strictly captured your Raja! Black Wins!</span>";
+                    createBoard();
+                    showEndGameModal("Game Over", "AI Captured your Raja! Black Armies win the battlefield.", "💀");
+                    return;
                 } else {
                     statusElement.innerText = `🤖 AI captured your ${bestMove.targetPiece.name}!`;
                 }
@@ -337,7 +368,7 @@
             createBoard();
         }
 
-        createBoard();
+        triggerReset();
     </script>
 </body>
 </html>
