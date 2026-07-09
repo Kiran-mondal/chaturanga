@@ -6,7 +6,6 @@
     <title>Chaturanga - Ancient Indian Heritage</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        /* ব্যাকগ্রাউন্ড রাজকীয় আবহ */
         @keyframes ambientGlow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -24,7 +23,6 @@
             overflow-x: hidden;
         }
 
-        /* ২ডি ফিক্সড অষ্টপদ বোর্ড */
         .ashtapada-board {
             width: 100%;
             max-width: 400px;
@@ -34,14 +32,12 @@
             border-radius: 8px;
         }
 
-        /* প্রাচীন টেরাকোটা ও চন্দন কাঠের ঘর */
         .ashtapada-square {
             background-color: #f1dec1;
             border: 1px solid #7c2d12;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.15s ease;
         }
         
-        /* প্রাচীন অষ্টপদের চিরাচরিত ক্রস (✕) চিহ্ন */
         .marked-square::after {
             content: "✕";
             position: absolute;
@@ -51,13 +47,11 @@
             font-weight: 300;
         }
         
-        /* রাজকীয় সোনাভ সিলেকশন */
         .selected { 
             background-color: #eab308 !important; 
             box-shadow: inset 0 0 10px #7c2d12;
         }
         
-        /* সম্ভাব্য চালের মার্কার */
         .possible-move-marker::before {
             content: "";
             position: absolute;
@@ -69,7 +63,6 @@
             z-index: 10;
         }
         
-        /* আক্রমণ/কাটার ঘর */
         .possible-capture-marker {
             background-color: #fca5a5 !important;
             box-shadow: inset 0 0 8px #dc2626 !important;
@@ -82,7 +75,7 @@
         }
     </style>
 </head>
-<body class="text-amber-100 min-h-screen flex flex-col items-center p-3 font-serif">
+    <body class="text-amber-100 min-h-screen flex flex-col items-center p-3 font-serif">
 
     <div class="text-center my-3 select-none">
         <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 tracking-widest drop-shadow-lg">चतुरङ्ग (CHATURANGA)</h1>
@@ -131,17 +124,16 @@
             </button>
         </div>
     </div>
-        <script>
+            <script>
         const pieceSigns = { 
             "Raja": "⚜️", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "⚔️" 
         };
 
-        // গেম ও এআই মেমোরি ট্র্যাকিং (ইউজারের খেলার ধরন বোঝার জন্য)
+        // Track engine stats for dynamic difficulty scaling
         let gameMetrics = {
             matchesPlayed: 0,
-            userAggressionCount: 0, // ইউজার কতবার আক্রমণ করেছে
-            userMistakes: [],       // ইউজারের ভুল চালের ট্র্যাক
-            lastLossReason: ""
+            userAggressionCount: 0, 
+            userMistakes: []
         };
 
         let currentMode = "Vs-AI"; 
@@ -174,7 +166,7 @@
 
         function switchMode(mode) {
             currentMode = mode;
-            if(mode === "Vs-AI") gameMetrics.matchesPlayed = 0; // এআই লেভেল রিসেট
+            if(mode === "Vs-AI") gameMetrics.matchesPlayed = 0; 
             triggerReset();
         }
 
@@ -196,9 +188,9 @@
                 document.getElementById('loss-title-2').innerText = "💀 Computer Losses";
                 
                 if(gameMetrics.matchesPlayed < 2) {
-                    statusElement.innerText = "🎓 Training Match: AI is evaluating your basics. Play freely!";
+                    statusElement.innerText = "🎓 TRAINING MODE: Match " + (gameMetrics.matchesPlayed + 1) + "/2. Learn the grid rules safely.";
                 } else {
-                    statusElement.innerText = "🔥 Expert Mode Active: AI has adapted to your tactics! Beware.";
+                    statusElement.innerText = "🔥 REAL COMBAT BATTLE: No more mercy! AI will strike hard using tactical algorithms.";
                 }
             } else {
                 document.getElementById('loss-title-1').innerText = "💀 Player 1 Losses";
@@ -209,23 +201,23 @@
         }
 
         function generateAITeachingReport(userWon) {
-            if (currentMode !== 'Vs-AI') return "Match over in Local Pass & Play.";
+            if (currentMode !== 'Vs-AI') return "Match over in Pass & Play mode.";
             gameMetrics.matchesPlayed++;
             
             if (userWon) {
-                return "অসাধারণ জয়! তুমি আমার চালগুলো ধরে ফেলেছ। পরবর্তী ম্যাচে আমি তোমার এই কৌশলটি ব্লক করার জন্য সম্পূর্ণ নতুন রণনীতি সাজিয়ে আসছি!";
+                return "🎯 GENIUS WIN! You parsed my defense formation. Next match, I am upgrading my search tree algorithms to counter this strategy!";
             }
 
-            let advise = "🏛️ [AI GURU STRATEGY LESSON]:\n";
+            let advise = "🏛️ [AI MILITARY COACH ANALYSIS]:\n";
             if (gameMetrics.userAggressionCount < 3) {
-                advise += "তুমি অনেক বেশি ডিফেন্সিভ খেলছিলে। চতুরঙ্গে শুধু ঘরে বসে থাকলে জেতা যায় না, পদাতিক ও অশ্বদের নিয়ে দ্রুত আক্রমণ গড়ে তুলতে হবে।";
+                advise += "Your gameplay was highly defensive. In Chaturanga, sitting back ensures defeat. Advance your Padati and Ashva squad early to claim territory.";
             } else if (gameMetrics.userMistakes.includes("Raja_exposed")) {
-                advise += "তুমি আক্রমণ করার সময় নিজের 'রাজা' (⚜️)-কে অরক্ষিত রেখে দিয়েছিলে। মনে রেখো, শত্রুর প্রধান লক্ষ্য তোমার সিংহাসন। মন্ত্রীর ঢাল ব্যবহার করো।";
+                advise += "TACTICAL BLUNDER: You left your Raja (⚜️) completely wide open during the vanguard attack. Protect the throne using your Mantri as a shield.";
             } else {
-                advise += "তোমার রথ (🛕) এবং হাতি (🐘) যুদ্ধের মূল শক্তি। পরের ম্যাচে এদের অলস না রেখে বোর্ডের কেন্দ্র দখলের জন্য ব্যবহার করো।";
+                advise += "You underutilized your Ratha (🛕) and Gaja (🐘). These are your heavy armor assets; position them in clear channels to dominate.";
             }
             
-            advise += "\n\n🎯 পরবর্তী ম্যাচের জন্য আমি আমার ইন্টেলিজেন্স আরও বাড়িয়ে নিচ্ছি। প্রস্তুত হও!";
+            advise += "\n\n🚀 NEXT MATCH UPGRADE: Training over! Adaptive AI will now execute strict check-mating strategies. Prepare yourself.";
             return advise;
         }
 
@@ -239,7 +231,7 @@
             gameMetrics.userMistakes = [];
             gameMetrics.userAggressionCount = 0;
         }
-                    function checkLegalMove(piece, fromR, fromC, toR, toC) {
+                        function checkLegalMove(piece, fromR, fromC, toR, toC) {
             if (toR < 0 || toR > 7 || toC < 0 || toC > 7) return false;
             if (fromR === toR && fromC === toC) return false;
             
@@ -270,7 +262,7 @@
                 case 'Ashva': 
                     return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
                 case 'Gaja': 
-                    return rowDiff === 2 && colDiff === 2;
+                    return rowDiff === 2 && colDiff === 2; // Strict 2 square diagonal jump rule
                 case 'Raja':
                     return rowDiff <= 1 && colDiff <= 1;
                 case 'Mantri':
@@ -344,7 +336,7 @@
                 const isLegal = checkLegalMove(selectedSquare.piece, selectedSquare.row, selectedSquare.col, row, col);
                 
                 if (!isLegal) {
-                    statusElement.innerText = `🏛️ Invalid Strategy! Select a valid square.`;
+                    statusElement.innerText = `🏛️ System: Invalid Military Move. Obey the grid!`;
                     selectedSquare = null;
                     highlightedMoves = [];
                     createBoard();
@@ -352,7 +344,6 @@
                 }
 
                 if (targetPiece) gameMetrics.userAggressionCount++;
-
                 if (selectedSquare.piece.name === 'Raja' && row < 6) {
                     gameMetrics.userMistakes.push("Raja_exposed");
                 }
@@ -363,8 +354,7 @@
                         if (targetPiece.name === 'Raja') {
                             isGameOver = true;
                             createBoard();
-                            const winnerDesc = currentMode === 'Vs-AI' ? "Computer AI captured your Raja! Your kingdom falls." : "Player 2 captured Player 1's Raja!";
-                            showEndGameModal("Battle Settled", winnerDesc, "💀", false);
+                            showEndGameModal("DEFEAT", "Computer AI captured your Raja! Your kingdom collapsed.", "💀", false);
                             return;
                         }
                     } else {
@@ -372,8 +362,7 @@
                         if (targetPiece.name === 'Raja') {
                             isGameOver = true;
                             createBoard();
-                            const winnerDesc = currentMode === 'Vs-AI' ? "Magnificent! You conquered the Computer AI's throne!" : "Player 1 captured Player 2's Raja!";
-                            showEndGameModal("Victory!", winnerDesc, "👑", true);
+                            showEndGameModal("VICTORY!", "Magnificent! You captured the AI's Raja!", "👑", true);
                             return;
                         }
                     }
@@ -392,11 +381,11 @@
                 if (isGameOver) return;
 
                 if (currentMode === 'Vs-AI') {
-                    statusElement.innerText = `Computer AI Calculating Strategy...`;
-                    setTimeout(runAdvancedAiTurn, 500);
+                    statusElement.innerText = `AI Thinking...`;
+                    setTimeout(runAdvancedAiTurn, 300); // Super fast calculation trigger
                 } else {
                     isPlayer1Turn = !isPlayer1Turn;
-                    statusElement.innerText = isPlayer1Turn ? "Player 1 Turn! Ready for move..." : "Player 2 Turn! Ready for move...";
+                    statusElement.innerText = isPlayer1Turn ? "Player 1 Turn!" : "Player 2 Turn!";
                 }
             }
         }
@@ -410,12 +399,6 @@
                     const [fromR, fromC] = key.split('-').map(Number);
                     const piece = initialSetup[key];
                     
-                    for (let toR = 0; toR < 8; r++) { // Fix variable scope safely
-                        for (let toC = 0; toC < 8; toC++) {
-                            // Ensure row scope mapping fix
-                        }
-                    }
-                    
                     for (let toR = 0; toR < 8; toR++) { 
                         for (let toC = 0; toC < 8; toC++) {
                             if (checkLegalMove(piece, fromR, fromC, toR, toC)) {
@@ -425,9 +408,11 @@
                                     if(gameMetrics.matchesPlayed < 2) {
                                         weight = target.name === 'Raja' ? 50 : 10;
                                     } else {
-                                        weight = target.name === 'Raja' ? 200 : (target.name === 'Mantri' ? 60 : (target.name === 'Ratha' ? 40 : 20));
-                                        if (target.name === 'Raja') weight += 50;
+                                        weight = target.name === 'Raja' ? 500 : (target.name === 'Mantri' ? 80 : (target.name === 'Ratha' ? 60 : 30));
                                     }
+                                } else {
+                                    // Positional weight enhancement for active gameplay
+                                    weight = (toR * 2); 
                                 }
                                 allLegalAiMoves.push({ fromKey: key, toKey: `${toR}-${toC}`, piece: piece, weight: weight, targetPiece: target });
                             }
@@ -438,14 +423,15 @@
 
             if (allLegalAiMoves.length === 0) {
                 isGameOver = true;
-                showEndGameModal("Stalemate", "No legal moves remaining on the battlefield. It's a DRAW!", "🏳️", false);
+                showEndGameModal("STALEMATE", "No safe deployments left. Draw!", "🏳️", false);
                 return;
             }
 
+            // AI Decision logic based on game tier
             if (gameMetrics.matchesPlayed >= 2) {
-                allLegalAiMoves.sort((a, b) => b.weight - a.weight);
+                allLegalAiMoves.sort((a, b) => b.weight - a.weight); // Pure Expert Aggression
             } else {
-                allLegalAiMoves.sort((a, b) => (Math.random() > 0.4 ? b.weight - a.weight : a.weight - b.weight));
+                allLegalAiMoves.sort((a, b) => (Math.random() > 0.5 ? b.weight - a.weight : a.weight - b.weight)); // Relaxed training flow
             }
             
             const bestMove = allLegalAiMoves[0]; 
@@ -455,17 +441,13 @@
                 if (bestMove.targetPiece.name === 'Raja') {
                     isGameOver = true;
                     createBoard();
-                    showEndGameModal("Battle Settled", "Computer AI captured your Raja! Your kingdom falls.", "💀", false);
+                    showEndGameModal("DEFEAT", "Computer AI captured your Raja!", "💀", false);
                     return;
                 } else {
-                    statusElement.innerText = `⚔️ AI Counter-Attacked: Your ${bestMove.targetPiece.name} captured!`;
+                    statusElement.innerText = `⚔️ AI captured your ${bestMove.targetPiece.name}!`;
                 }
             } else {
-                if (gameMetrics.matchesPlayed >= 2) {
-                    statusElement.innerText = `🤖 AI Expert Engine deployed a tactical trap with ${bestMove.piece.name}.`;
-                } else {
-                    statusElement.innerText = `🤖 AI moved its ${bestMove.piece.name}. Your turn!`;
-                }
+                statusElement.innerText = `🤖 AI moved ${bestMove.piece.name} to ${bestMove.toKey}.`;
             }
 
             delete initialSetup[bestMove.fromKey];
@@ -474,8 +456,8 @@
             createBoard();
             if (!isGameOver) {
                 setTimeout(() => {
-                    statusElement.innerText = "Your Turn! Ready for your move...";
-                }, 1200);
+                    statusElement.innerText = "Your Turn! Make a calculated move...";
+                }, 800);
             }
         }
 
@@ -483,3 +465,4 @@
     </script>
 </body>
 </html>
+
