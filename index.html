@@ -125,8 +125,8 @@
         </div>
     </div>
         <script>
-        // 🔗 আপনার রেন্ডার ব্যাকএন্ড অ্যাপের আসল ইউআরএল এখানে রিপ্লেস করে দিন
-        const RENDER_API_URL = "https://your-render-app-name.onrender.com/api"; 
+        // 🔗 আপনার আসল রেন্ডার ক্লাউড এপিআই লিংক এখানে সেট করে দেওয়া হয়েছে
+        const RENDER_API_URL = "https://chaturanga-6wdo.onrender.com/api"; 
 
         const pieceSigns = { 
             "Raja": "⚜️", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "⚔️" 
@@ -139,7 +139,6 @@
             matchMoveHistory: []
         };
 
-        // গ্লোবাল ক্লাউড ইন্টেলিজেন্স ডেটাবেস মেমোরি
         let aiDatabase = {
             userWinningTraps: []
         };
@@ -158,21 +157,21 @@
         let highlightedMoves = [];
         let isPlayer1Turn = true; 
 
-        // ১. নিয়ন ডাটাবেস (রেন্ডার এপিআই) থেকে বৈশ্বিক কৌশলগুলো লোড করার ফাংশন
+        // ১. নিয়ন ক্লাউড ডাটাবেস থেকে গ্লোবাল চালের ট্র্যাপগুলো নিয়ে আসা
         async function loadGlobalAIDatabase() {
             try {
                 const response = await fetch(`${RENDER_API_URL}/get-strategies`);
                 if (response.ok) {
                     const data = await response.json();
                     aiDatabase.userWinningTraps = data.traps || [];
-                    console.log("Global AI strategies pulled from Neon Database successfully.");
+                    console.log("Global AI look-ahead patterns synced with Neon Cloud via Render.");
                 }
             } catch (error) {
-                console.error("Cloud database offline. Falling back to local core logic.", error);
+                console.error("Neon DB connection bypass. Using frontend cache.", error);
             }
         }
 
-        // ২. নতুন সফল কৌশল সরাসরি নিয়ন ডাটাবেজে ক্লাউড সিঙ্ক করার ফাংশন
+        // ২. নতুন সফল জয়ের কৌশল নিয়ন ক্লাউড ডাটাবেসে সেভ করা
         async function syncTrapToNeonDatabase(winningMove) {
             try {
                 await fetch(`${RENDER_API_URL}/save-strategy`, {
@@ -180,9 +179,9 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ move: winningMove })
                 });
-                console.log("Strategic vector synced globally with Neon Database.");
+                console.log("Tactical array synced safely with Neon Server.");
             } catch (error) {
-                console.error("Cloud sync engine failed.", error);
+                console.error("Cloud synchronization timeout.", error);
             }
         }
 
@@ -225,9 +224,9 @@
                 document.getElementById('loss-title-2').innerText = "💀 Computer Losses";
                 
                 if(gameMetrics.matchesPlayed < 2) {
-                    statusElement.innerText = "🎓 TRAINING MODE: Match " + (gameMetrics.matchesPlayed + 1) + "/2. AI is analyzing your core moves.";
+                    statusElement.innerText = "🎓 TRAINING MODE: Match " + (gameMetrics.matchesPlayed + 1) + "/2. System profiling active.";
                 } else {
-                    statusElement.innerText = "🔥 REAL COMBAT: Cloud AI synchronized with Neon DB. Zero mercy mode active!";
+                    statusElement.innerText = "🔥 REAL COMBAT: MiniMax 3-Step Predictive Engine active. AI connected to Neon Cloud DB!";
                 }
             } else {
                 document.getElementById('loss-title-1').innerText = "💀 Player 1 Losses";
@@ -245,21 +244,19 @@
                 if(gameMetrics.matchMoveHistory.length > 0) {
                     const lastWinningMove = gameMetrics.matchMoveHistory[gameMetrics.matchMoveHistory.length - 1];
                     aiDatabase.userWinningTraps.push(lastWinningMove);
-                    syncTrapToNeonDatabase(lastWinningMove); // নিয়ন ক্লাউডে সফল ট্র্যাপ পাঠিয়ে দেওয়া হচ্ছে
+                    syncTrapToNeonDatabase(lastWinningMove); 
                 }
-                return "🎯 GENIUS WIN! Your breakthrough trap has been indexed into our Neon Cloud Database. Next time, my algorithms will auto-block this specific strategy!";
+                return "🎯 GENIUS WIN! You bypassed my Look-Ahead deep loops. Winning strategy synced with Render server.";
             }
 
             let advise = "🏛️ [AI MILITARY COACH ANALYSIS]:\n";
             if (gameMetrics.userAggressionCount < 3) {
-                advise += "Your gameplay was highly defensive. In Chaturanga, sitting back ensures defeat. Advance your Padati and Ashva squad early to claim territory.";
+                advise += "Your vanguard was stagnant. In Chaturanga, passive grid placement guarantees checkmate. Advance Ashva and Padati files.";
             } else if (gameMetrics.userMistakes.includes("Raja_exposed")) {
-                advise += "TACTICAL BLUNDER: You left your Raja (⚜️) completely wide open during the vanguard attack. Protect the throne using your Mantri as a shield.";
+                advise += "TACTICAL BLUNDER: Left your Raja unguarded during your mid-board push. Keep your Mantri nearby as a personal shield.";
             } else {
-                advise += "You underutilized your Ratha (🛕) and Gaja (🐘). These are your heavy armor assets; position them in clear channels to dominate.";
+                advise += "You underutilized your Ratha and Gaja units. Open active files for them to dominate the grid lanes.";
             }
-            
-            advise += "\n\n🚀 REAL BATTLE ENGAGED: Mercy sub-routines deactivated. AI will execute strict tactical check-mating systems.";
             return advise;
         }
 
@@ -304,7 +301,7 @@
                 case 'Ashva': 
                     return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
                 case 'Gaja': 
-                    return rowDiff === 2 && colDiff === 2; // Strict 2 square jump rule
+                    return rowDiff === 2 && colDiff === 2; 
                 case 'Raja':
                     return rowDiff <= 1 && colDiff <= 1;
                 case 'Mantri':
@@ -378,7 +375,7 @@
                 const isLegal = checkLegalMove(selectedSquare.piece, selectedSquare.row, selectedSquare.col, row, col);
                 
                 if (!isLegal) {
-                    statusElement.innerText = `🏛️ System: Invalid Military Move. Obey the grid rules!`;
+                    statusElement.innerText = `🏛️ System: Invalid Move. Obey the grid boundaries!`;
                     selectedSquare = null;
                     highlightedMoves = [];
                     createBoard();
@@ -425,8 +422,8 @@
                 if (isGameOver) return;
 
                 if (currentMode === 'Vs-AI') {
-                    statusElement.innerText = `AI Calculating Strategy...`;
-                    setTimeout(runAdvancedAiTurn, 300); 
+                    statusElement.innerText = `🤖 AI calculating deep tactical futures...`;
+                    setTimeout(triggerAiEngineLogic, 300); 
                 } else {
                     isPlayer1Turn = !isPlayer1Turn;
                     statusElement.innerText = isPlayer1Turn ? "Player 1 Turn!" : "Player 2 Turn!";
@@ -434,7 +431,78 @@
             }
         }
 
-        function runAdvancedAiTurn() {
+        function evaluateBoardState() {
+            const scores = { 'Raja': 10000, 'Mantri': 90, 'Ratha': 50, 'Gaja': 40, 'Ashva': 30, 'Padati': 10 };
+            let totalVal = 0;
+            for (const key in initialSetup) {
+                const piece = initialSetup[key];
+                const [r, c] = key.split('-').map(Number);
+                let weight = scores[piece.name];
+                
+                if (piece.name === 'Padati') weight += piece.isWhite ? (7 - r) : r;
+                
+                if (piece.isWhite) {
+                    totalVal -= weight; 
+                } else {
+                    totalVal += weight; 
+                }
+            }
+            return totalVal;
+        }
+
+        function minimax(depth, isAiMaximizing) {
+            if (depth === 0 || isGameOver) return evaluateBoardState();
+
+            const aiMoves = [];
+            for (const key in initialSetup) {
+                const isWhitePiece = initialSetup[key].isWhite;
+                if ((isAiMaximizing && !isWhitePiece) || (!isAiMaximizing && isWhitePiece)) {
+                    const [fromR, fromC] = key.split('-').map(Number);
+                    const piece = initialSetup[key];
+                    for (let toR = 0; toR < 8; toR++) {
+                        for (let toC = 0; toC < 8; toC++) {
+                            if (checkLegalMove(piece, fromR, fromC, toR, toC)) {
+                                aiMoves.push({ from: key, to: `${toR}-${toC}`, piece: piece });
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (aiMoves.length === 0) return evaluateBoardState();
+
+            if (isAiMaximizing) {
+                let maxEval = -Infinity;
+                for (const move of aiMoves) {
+                    const backup = initialSetup[move.to];
+                    initialSetup[move.to] = initialSetup[move.from];
+                    delete initialSetup[move.from];
+                    
+                    let evaluation = minimax(depth - 1, false);
+                    maxEval = Math.max(maxEval, evaluation);
+                    
+                    initialSetup[move.from] = initialSetup[move.to];
+                    if (backup) initialSetup[move.to] = backup; else delete initialSetup[move.to];
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (const move of aiMoves) {
+                    const backup = initialSetup[move.to];
+                    initialSetup[move.to] = initialSetup[move.from];
+                    delete initialSetup[move.from];
+                    
+                    let evaluation = minimax(depth - 1, true);
+                    minEval = Math.min(minEval, evaluation);
+                    
+                    initialSetup[move.from] = initialSetup[move.to];
+                    if (backup) initialSetup[move.to] = backup; else delete initialSetup[move.to];
+                }
+                return minEval;
+            }
+        }
+
+        function triggerAiEngineLogic() {
             if (isGameOver) return;
             const allLegalAiMoves = [];
 
@@ -442,31 +510,11 @@
                 if (!initialSetup[key].isWhite) {
                     const [fromR, fromC] = key.split('-').map(Number);
                     const piece = initialSetup[key];
-                    
                     for (let toR = 0; toR < 8; toR++) { 
                         for (let toC = 0; toC < 8; toC++) {
                             if (checkLegalMove(piece, fromR, fromC, toR, toC)) {
                                 const target = initialSetup[`${toR}-${toC}`];
-                                let weight = 1;
-                                if (target) {
-                                    if(gameMetrics.matchesPlayed < 2) {
-                                        weight = target.name === 'Raja' ? 50 : 10;
-                                    } else {
-                                        weight = target.name === 'Raja' ? 500 : (target.name === 'Mantri' ? 80 : (target.name === 'Ratha' ? 60 : 30));
-                                    }
-                                } else {
-                                    weight = (toR * 2); 
-                                }
-
-                                // 🧠 ক্লাউড লার্নিং কাউন্টার লজিক:
-                                // নিয়ন ডাটাবেস থেকে পাওয়া সফল ট্র্যাপের ঘরগুলো এআই আগে থেকেই প্রটেক্ট বা ব্লক করবে
-                                aiDatabase.userWinningTraps.forEach(trap => {
-                                    if (trap.to === `${toR}-${toC}`) {
-                                        weight += 200; // প্রটেকশন বুস্ট
-                                    }
-                                });
-
-                                allLegalAiMoves.push({ fromKey: key, toKey: `${toR}-${toC}`, piece: piece, weight: weight, targetPiece: target });
+                                allLegalAiMoves.push({ fromKey: key, toKey: `${toR}-${toC}`, piece: piece, targetPiece: target });
                             }
                         }
                     }
@@ -475,14 +523,28 @@
 
             if (allLegalAiMoves.length === 0) {
                 isGameOver = true;
-                showEndGameModal("STALEMATE", "No safe deployments left. It's a DRAW!", "🏳️", false);
+                showEndGameModal("STALEMATE", "No deployments left. Draw!", "🏳️", false);
                 return;
             }
 
             if (gameMetrics.matchesPlayed >= 2) {
-                allLegalAiMoves.sort((a, b) => b.weight - a.weight); 
+                for (const move of allLegalAiMoves) {
+                    const backup = initialSetup[move.toKey];
+                    initialSetup[move.toKey] = initialSetup[move.fromKey];
+                    delete initialSetup[move.fromKey];
+                    
+                    move.minimaxWeight = minimax(2, false); 
+                    
+                    aiDatabase.userWinningTraps.forEach(trap => {
+                        if (trap.to === move.toKey) move.minimaxWeight += 200;
+                    });
+
+                    initialSetup[move.fromKey] = initialSetup[move.toKey];
+                    if (backup) initialSetup[move.toKey] = backup; else delete initialSetup[move.toKey];
+                }
+                allLegalAiMoves.sort((a, b) => b.minimaxWeight - a.minimaxWeight);
             } else {
-                allLegalAiMoves.sort((a, b) => (Math.random() > 0.5 ? b.weight - a.weight : a.weight - b.weight)); 
+                allLegalAiMoves.sort((a, b) => Math.random() - 0.5);
             }
             
             const bestMove = allLegalAiMoves[0]; 
@@ -512,7 +574,6 @@
             }
         }
 
-        // গেম লোড হওয়ার শুরুতেই নিয়ন ডাটাবেসের ডেটা ক্লাউড থেকে সিঙ্ক হবে
         loadGlobalAIDatabase();
         triggerReset();
     </script>
