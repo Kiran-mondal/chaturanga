@@ -78,7 +78,7 @@
 <body class="text-amber-100 min-h-screen flex flex-col items-center p-3 font-serif">
 
     <div class="text-center my-3 select-none">
-        <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 tracking-widest drop-shadow-lg">चтурङ्ग (CHATURANGA)</h1>
+        <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 tracking-widest drop-shadow-lg">चतुरंग (CHATURANGA)</h1>
         <p class="text-amber-600/80 text-[10px] mt-0.5 font-sans tracking-widest uppercase">Ancient Indian Military Path-Blocking Engine</p>
     </div>
 
@@ -132,11 +132,11 @@
         };
 
         let gameMetrics = {
-            currentStage: 1,           // ১ থেকে শুরু হবে প্রোগ্রেসিভ লেভেল লুপ
+            currentStage: 1,           
             userAggressionCount: 0, 
             userMistakes: [],
             matchMoveHistory: [],
-            consecutiveUserLosses: 0   // টানা হারের কাউন্টার
+            consecutiveUserLosses: 0   
         };
 
         let aiDatabase = {
@@ -244,7 +244,7 @@
             
             if (userWon) {
                 gameMetrics.consecutiveUserLosses = 0; 
-                gameMetrics.currentStage = Math.min(gameMetrics.currentStage + 1, 3); // জিতলে স্টেজ ১ লেভেল উপরে উঠবে (সর্বোচ্চ ৩)
+                gameMetrics.currentStage = Math.min(gameMetrics.currentStage + 1, 3); 
                 
                 if(gameMetrics.matchMoveHistory.length > 0) {
                     const lastWinningMove = gameMetrics.matchMoveHistory[gameMetrics.matchMoveHistory.length - 1];
@@ -258,7 +258,7 @@
             
             let advise = "🏛️ [AI COURT CHRONICLE REPORT]:\n";
             if (gameMetrics.consecutiveUserLosses >= 2) {
-                gameMetrics.currentStage = 1; // ২ বার হারলে সোজা স্টেজ ১ এ ব্যাক করবে
+                gameMetrics.currentStage = 1; 
                 gameMetrics.consecutiveUserLosses = 0;
                 advise += "CRITICAL PATTERN RECOVERY: Consecutive losses detected. Resetting AI Engine to Stage 1 (Learning Mode) to re-establish tactical interest.";
             } else {
@@ -541,12 +541,9 @@
                 return;
             }
 
-            // 👑 PROGRESSIVE AUTO-SCALING HARDNESS LOGIC
             if (gameMetrics.currentStage === 1) {
-                // Stage 1: Easy Learning Mode - Random deployment pacing
                 allLegalAiMoves.sort((a, b) => Math.random() - 0.5);
             } else if (gameMetrics.currentStage === 2) {
-                // Stage 2: Moderate Mode - 1-Turn depth evaluation active
                 for (const move of allLegalAiMoves) {
                     const backup = initialSetup[move.toKey];
                     initialSetup[move.toKey] = initialSetup[move.fromKey];
@@ -559,7 +556,6 @@
                 }
                 allLegalAiMoves.sort((a, b) => b.minimaxWeight - a.minimaxWeight);
             } else {
-                // Stage 3: Master Hardcore Mode - Full 3-Step Predictive MiniMax + Neon Cloud Cache Injection
                 for (const move of allLegalAiMoves) {
                     const backup = initialSetup[move.toKey];
                     initialSetup[move.toKey] = initialSetup[move.fromKey];
