@@ -109,11 +109,6 @@
         </div>
     </div>
 
-    <div class="mt-3 heritage-card p-3 rounded-lg w-full max-w-[400px]">
-        <h3 class="text-amber-500 font-bold mb-0.5 text-[10px] font-sans tracking-wider uppercase">⚡ Royal Court Chronicle</h3>
-        <p id="status" class="text-amber-100/70 text-[11px] font-bold leading-relaxed font-sans"></p>
-    </div>
-
     <div id="gameOverModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
         <div class="bg-stone-950 border border-amber-500 p-6 rounded-xl max-w-xs w-full text-center shadow-2xl">
             <div id="modalIcon" class="text-4xl mb-2">⚜️</div>
@@ -151,7 +146,6 @@
 
         const markedSquares = ["0-0", "0-3", "0-4", "0-7", "3-0", "3-3", "3-4", "3-7", "4-0", "4-3", "4-4", "4-7", "7-0", "7-3", "7-4", "7-7"];
         const boardElement = document.getElementById('board');
-        const statusElement = document.getElementById('status');
         const modalElement = document.getElementById('gameOverModal');
         let selectedSquare = null;
         let highlightedMoves = [];
@@ -223,18 +217,9 @@
             if (currentMode === 'Vs-AI') {
                 document.getElementById('loss-title-1').innerText = "💀 Your Losses";
                 document.getElementById('loss-title-2').innerText = "💀 Computer Losses";
-                
-                if (gameMetrics.currentStage === 1) {
-                    statusElement.innerText = "🎓 STAGE 1: Learning Mode. AI plays basic tactics to introduce grid operations.";
-                } else if (gameMetrics.currentStage === 2) {
-                    statusElement.innerText = "⚔️ STAGE 2: Moderate Combat. AI activates depth calculations. Stay alert.";
-                } else {
-                    statusElement.innerText = "🔥 STAGE 3: Grandmaster Combat. Full MiniMax engine active. No exceptions!";
-                }
             } else {
                 document.getElementById('loss-title-1').innerText = "💀 Player 1 Losses";
                 document.getElementById('loss-title-2').innerText = "💀 Player 2 Losses";
-                statusElement.innerText = "Player 1 Turn! Ready for move...";
             }
             createBoard();
         }
@@ -260,7 +245,7 @@
             if (gameMetrics.consecutiveUserLosses >= 2) {
                 gameMetrics.currentStage = 1; 
                 gameMetrics.consecutiveUserLosses = 0;
-                advise += "CRITICAL PATTERN RECOVERY: Consecutive losses detected. Resetting AI Engine to Stage 1 (Learning Mode) to re-establish tactical interest.";
+                advise += "CRITICAL PATTERN RECOVERY: Consecutive losses detected. Resetting AI Engine to Stage 1 to re-establish dynamic maneuvers.";
             } else {
                 advise += "CURRENT RATING: Stage " + gameMetrics.currentStage + " ongoing. ";
                 if (gameMetrics.userAggressionCount < 3) {
@@ -389,7 +374,6 @@
                 const isLegal = checkLegalMove(selectedSquare.piece, selectedSquare.row, selectedSquare.col, row, col);
                 
                 if (!isLegal) {
-                    statusElement.innerText = "System Warning: Invalid Grid Placement Attempted.";
                     selectedSquare = null;
                     highlightedMoves = [];
                     createBoard();
@@ -436,11 +420,9 @@
                 if (isGameOver) return;
 
                 if (currentMode === 'Vs-AI') {
-                    statusElement.innerText = "AI is computing structural paths...";
                     setTimeout(triggerAiEngineLogic, 300); 
                 } else {
                     isPlayer1Turn = !isPlayer1Turn;
-                    statusElement.innerText = isPlayer1Turn ? "Player 1 Turn!" : "Player 2 Turn!";
                 }
             }
         }
@@ -548,9 +530,7 @@
                     const backup = initialSetup[move.toKey];
                     initialSetup[move.toKey] = initialSetup[move.fromKey];
                     delete initialSetup[move.fromKey];
-                    
                     move.minimaxWeight = evaluateBoardState(); 
-                    
                     initialSetup[move.fromKey] = initialSetup[move.toKey];
                     if (backup) initialSetup[move.toKey] = backup; else delete initialSetup[move.toKey];
                 }
@@ -582,22 +562,13 @@
                     createBoard();
                     showEndGameModal("DEFEAT", "The Computer AI captured your Raja!", "💀", false);
                     return;
-                } else {
-                    statusElement.innerText = `⚔️ AI captured your ${bestMove.targetPiece.name}!`;
                 }
-            } else {
-                statusElement.innerText = `🤖 AI moved ${bestMove.piece.name} to ${bestMove.toKey}.`;
             }
 
             delete initialSetup[bestMove.fromKey];
             initialSetup[bestMove.toKey] = { name: bestMove.piece.name, isWhite: false };
 
             createBoard();
-            if (!isGameOver) {
-                setTimeout(() => {
-                    statusElement.innerText = "Your Turn! Execute your grid maneuvers...";
-                }, 800);
-            }
         }
 
         loadGlobalAIDatabase();
