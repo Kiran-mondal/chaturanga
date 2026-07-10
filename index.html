@@ -13,14 +13,11 @@
         }
 
         body {
-            background: #1a0f05;
-            /* নিচের url('YOUR_IMAGE_LINK_HERE') অংশে আপনার ছবির আসল অনলাইন ইউআরএল (URL) বসিয়ে দিন।
-               একটি ডার্ক গ্রেডিয়েন্ট লিনিয়ার মাস্ক ব্যবহার করা হয়েছে যাতে ব্যাকগ্রাউন্ডের ছবি গেমের টেক্সট বা বোর্ডের ক্ষতি না করে।
-            */
+            background: #2a1808;
+            /* লো-ব্রাইটনেসের সমস্যা দূর করতে লিনিয়ার-গ্রেডিয়েন্টের অপাসিটি (0.82/0.95 থেকে কমিয়ে 0.45/0.65) করা হয়েছে */
             background-image: 
-                linear-gradient(rgba(18, 9, 3, 0.82), rgba(8, 2, 0, 0.95)),
+                linear-gradient(rgba(18, 9, 3, 0.45), rgba(8, 2, 0, 0.65)),
                 url('https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1000&auto=format&fit=crop'); 
-            
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -33,7 +30,8 @@
             max-width: 400px;
             aspect-ratio: 1 / 1;
             border: 6px solid #7c2d12;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
+            /* লো-ব্রাইটনেসে বোর্ডকে আলাদা করার জন্য গ্লো-শ্যাডো বাড়ানো হয়েছে */
+            box-shadow: 0 0 35px rgba(234, 179, 8, 0.25), 0 20px 50px rgba(0, 0, 0, 0.95);
             border-radius: 8px;
         }
 
@@ -74,7 +72,7 @@
         }
 
         .heritage-card {
-            background: linear-gradient(135deg, #2a140a 0%, #120300 100%);
+            background: linear-gradient(135deg, rgba(42, 20, 10, 0.95) 0%, rgba(18, 3, 0, 0.98) 100%);
             border: 1px solid #b45309;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
         }
@@ -124,8 +122,7 @@
             </button>
         </div>
     </div>
-
-    <script>
+        <script>
         const RENDER_API_URL = "https://chaturanga-6wdo.onrender.com/api"; 
 
         const pieceSigns = { 
@@ -182,7 +179,8 @@
                 console.error("Cloud synchronization bypass.", error);
             }
         }
-          function resetInitialSetup() {
+
+        function resetInitialSetup() {
             initialSetup = {
                 "0-0": { name: "Ratha", isWhite: false }, "0-1": { name: "Ashva", isWhite: false }, "0-2": { name: "Gaja", isWhite: false }, "0-3": { name: "Raja", isWhite: false },
                 "0-4": { name: "Mantri", isWhite: false }, "0-5": { name: "Gaja", isWhite: false }, "0-6": { name: "Ashva", isWhite: false }, "0-7": { name: "Ratha", isWhite: false },
@@ -274,8 +272,7 @@
             gameMetrics.userMistakes = [];
             gameMetrics.userAggressionCount = 0;
         }
-
-        function checkLegalMove(piece, fromR, fromC, toR, toC) {
+                    function checkLegalMove(piece, fromR, fromC, toR, toC) {
             if (toR < 0 || toR > 7 || toC < 0 || toC > 7) return false;
             if (fromR === toR && fromC === toC) return false;
             
@@ -432,6 +429,7 @@
                 }
             }
         }
+
         function evaluateBoardState() {
             const scores = { 'Raja': 10000, 'Mantri': 90, 'Ratha': 50, 'Gaja': 40, 'Ashva': 30, 'Padati': 10 };
             let totalVal = 0;
