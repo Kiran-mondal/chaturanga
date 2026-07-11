@@ -131,8 +131,8 @@
         <p class="text-amber-600/80 text-[10px] mt-0.5 font-sans tracking-widest uppercase">Royal Sandalwood Ashtapada Engine</p>
     </div>
 
-    <div class="heritage-card p-3 rounded-lg w-full max-w-[400px] mb-3 border border-amber-500/20 shadow-xl flex flex-col gap-2">
-        <div class="flex justify-between items-center border-b border-amber-900/20 pb-2">
+    <div class="heritage-card p-3 rounded-lg w-full max-w-[400px] mb-3 border border-amber-500/20 shadow-xl">
+        <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <span class="pulse-dot"></span>
                 <span class="text-[10px] font-bold tracking-wider font-sans text-stone-300 uppercase">Live Website Status</span>
@@ -147,11 +147,6 @@
                     <span class="block text-[8px] text-stone-400 font-sans uppercase">In Battles</span>
                 </div>
             </div>
-        </div>
-        
-        <div class="flex items-center justify-between bg-stone-950/40 px-2 py-1.5 rounded border border-amber-900/20 text-[10px]">
-            <span class="text-stone-400 font-sans uppercase tracking-tight">Current Match Action:</span>
-            <span id="live-action-feed" class="text-amber-300 font-medium font-sans truncate max-w-[230px]">Waiting for first move...</span>
         </div>
     </div>
 
@@ -317,7 +312,6 @@
                 document.getElementById('loss-title-1').innerText = "💀 Player 1 Losses";
                 document.getElementById('loss-title-2').innerText = "💀 Player 2 Losses";
             }
-            document.getElementById('live-action-feed').innerText = "Match reset. Ready!";
             createBoard();
             reportMatchActivity("ended", "Battle restarted"); 
         }
@@ -337,7 +331,6 @@
             document.getElementById('modalDesc').innerHTML = `<span class="block mb-3">${description}</span><div class="bg-stone-900/90 p-2.5 text-left text-amber-500 text-[11px] font-sans leading-relaxed whitespace-pre-line border border-amber-900/40">${teachingReport}</div>`;
             document.getElementById('modalIcon').innerText = icon;
             modalElement.classList.remove('hidden');
-            document.getElementById('live-action-feed').innerText = `Game Over: ${title}`;
             reportMatchActivity("ended", `Match finished - ${title}`); 
         }
 
@@ -424,10 +417,9 @@
                     createBoard(); return;
                 }
 
-                // 📢 Live Action Messaging Core
+                // 📢 Background Data Logging Core
                 let moveLogText = `White moved ${selectedSquare.piece.name} to [${row},${col}]`;
                 if (targetPiece) moveLogText = `White ${selectedSquare.piece.name} captured Black ${targetPiece.name}! 🔥`;
-                document.getElementById('live-action-feed').innerText = moveLogText;
                 reportMatchActivity("playing", moveLogText);
 
                 gameMetrics.matchMoveHistory.push(`${fromKey}:${selectedSquare.piece.name}->${squareId}`);
@@ -486,10 +478,9 @@
 
             const chosenMove = availableMoves[0], targetPiece = initialSetup[chosenMove.to];
             
-            // 📢 Bot Action Feed Dispatcher
+            // 📢 Bot Action Logger
             let botLogText = `Computer moved ${chosenMove.piece.name} to [${chosenMove.to}]`;
             if (targetPiece) botLogText = `Computer captured your ${targetPiece.name}! ⚠️`;
-            document.getElementById('live-action-feed').innerText = botLogText;
             reportMatchActivity("playing", botLogText);
 
             if (targetPiece) {
