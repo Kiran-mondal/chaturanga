@@ -2,8 +2,9 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
+    <!-- জুম ও ইন্টারঅ্যাকশন সুরক্ষা (User-Scalable No) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chaturanga - Royal Heritage Edition</title>
+    <title>Chaturanga - Royal Wood & Gold Edition</title>
     <style>
         /* ব্যাকগ্রাউন্ড ও বডি ডিজাইন */
         body { 
@@ -115,18 +116,20 @@
         }
         .btn-reset:active {
             transform: scale(0.95);
-        }<body>
+        }
+    </style>
+</head>
+<body>
 
     <h1>चतुरंग</h1>
 
+    <!-- রয়্যাল বোর্ড ফ্রেম -->
     <div class="board-frame">
         <div id="board" class="board"></div>
     </div>
 
     <button class="btn-reset" onclick="triggerReset()">🔄 RESET BOARD</button>
-        
-    </style>
-</head>
+
 <script>
     // গুটিগুলোর অবিকৃত আইকন বা ইমোজি
     const pieceSigns = { 
@@ -214,7 +217,8 @@
             }
         }
     }
-        // ইন্টারঅ্যাক্টিভ মুভমেন্ট লজিক (UX টেস্টিং-এর জন্য)
+
+    // ইন্টারঅ্যাক্টিভ মুভমেন্ট লজিক (UX টেস্টিং-এর জন্য)
     function handleSquareClick(squareId) {
         const piece = gameState[squareId];
 
