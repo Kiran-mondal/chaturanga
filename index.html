@@ -26,7 +26,7 @@
         body {
             background: #2a1808;
             background-image: 
-                linear-gradient(rgba(18, 9, 3, 0.45), rgba(8, 2, 0, 0.65)),
+                linear-gradient(rgba(18, 9, 3, 0.35), rgba(8, 2, 0, 0.55)),
                 url('https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1000&auto=format&fit=crop'); 
             background-size: cover;
             background-position: center;
@@ -45,13 +45,15 @@
             max-width: 400px;
             aspect-ratio: 1 / 1;
             padding: 10px; 
-            background: linear-gradient(135deg, #2b1408 0%, #170a04 100%); 
+            background: linear-gradient(135deg, rgba(43, 20, 8, 0.85) 0%, rgba(23, 10, 4, 0.9) 100%); 
             border: 5px double #d4af37; 
             box-shadow: 
                 0 0 0 2px #170a04,
                 inset 0 0 15px rgba(0,0,0,0.85),
                 0 25px 50px rgba(0, 0, 0, 0.95);
             border-radius: 6px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
         .ashtapada-square {
@@ -67,12 +69,12 @@
         }
 
         .light-square { 
-            background: linear-gradient(145deg, #fdfbf7 0%, #e6dcce 100%); 
+            background: linear-gradient(145deg, rgba(253, 251, 247, 0.9) 0%, rgba(230, 220, 206, 0.85) 100%); 
             box-shadow: inset 1px 1px 2px rgba(255,255,255,0.8), inset -1px -1px 2px rgba(0,0,0,0.05);
         }
         
         .dark-square { 
-            background: linear-gradient(145deg, #3d1b0c 0%, #1f0d05 100%); 
+            background: linear-gradient(145deg, rgba(61, 27, 12, 0.85) 0%, rgba(31, 13, 5, 0.9) 100%); 
             background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 2px, transparent 2px, transparent 4px);
             box-shadow: inset 2px 2px 4px rgba(0,0,0,0.55), inset -1px -1px 2px rgba(255,255,255,0.05);
         }
@@ -115,10 +117,13 @@
             z-index: 20;
         }
 
+        /* 🔮 Premium Transparent Glass Card Concept */
         .heritage-card {
-            background: linear-gradient(135deg, rgba(42, 20, 10, 0.95) 0%, rgba(18, 3, 0, 0.98) 100%);
-            border: 1px solid #b45309;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, rgba(42, 20, 10, 0.55) 0%, rgba(18, 3, 0, 0.65) 100%);
+            border: 1px solid rgba(180, 83, 9, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
         }
 
         /* 🟢 Live Blink Pulse for Online Counter */
@@ -145,31 +150,31 @@
         <p class="text-amber-600/80 text-[10px] mt-0.5 font-sans tracking-widest uppercase">Royal Sandalwood Ashtapada Engine</p>
     </div>
 
-    <div class="heritage-card px-4 py-2 rounded-lg w-full max-w-[400px] mb-3 flex justify-between items-center border border-amber-900/30 bg-stone-950/40 shadow-inner">
+    <div class="heritage-card px-4 py-2 rounded-lg w-full max-w-[400px] mb-3 flex justify-between items-center border border-amber-900/20 shadow-inner">
         <div class="flex items-center gap-2">
             <span class="pulse-dot"></span>
-            <span class="text-[10px] font-bold tracking-wider font-sans text-stone-400 uppercase">Live Website Status</span>
+            <span class="text-[10px] font-bold tracking-wider font-sans text-stone-300/90 uppercase">Live Website Status</span>
         </div>
         <div class="flex gap-4 text-right">
             <div>
                 <span id="online-users" class="text-xs font-bold text-emerald-400 font-sans">1</span>
-                <span class="block text-[8px] text-stone-500 font-sans uppercase">Online Now</span>
+                <span class="block text-[8px] text-stone-400 font-sans uppercase">Online Now</span>
             </div>
-            <div class="border-l border-stone-800 pl-4">
+            <div class="border-l border-amber-900/30 pl-4">
                 <span id="active-matches" class="text-xs font-bold text-amber-400 font-sans">0</span>
-                <span class="block text-[8px] text-stone-500 font-sans uppercase">In Battles</span>
+                <span class="block text-[8px] text-stone-400 font-sans uppercase">In Battles</span>
             </div>
         </div>
     </div>
 
     <div id="mode-panel" class="flex gap-2 mb-4 heritage-card p-1.5 rounded-lg w-full max-w-[400px] justify-between items-center">
-        <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/40">
+        <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900/60 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/30">
             👥 Pass & Play
         </button>
-        <button id="btnComputer" onclick="switchMode('Vs-Computer')" class="flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition font-sans shadow-md shadow-amber-600/20">
+        <button id="btnComputer" onclick="switchMode('Vs-Computer')" class="flex-1 py-2 text-[11px] font-bold bg-amber-600/80 text-stone-950 rounded cursor-pointer transition font-sans shadow-md border border-amber-500/30">
             💻 VS Computer
         </button>
-        <button onclick="triggerReset()" class="px-3 py-2 text-[11px] font-bold bg-stone-950 text-red-400 rounded border border-red-900/30 cursor-pointer transition font-sans">
+        <button onclick="triggerReset()" class="px-3 py-2 text-[11px] font-bold bg-stone-950/70 text-red-400 rounded border border-red-900/30 cursor-pointer transition font-sans">
             🔄 Reset
         </button>
     </div>
@@ -181,16 +186,16 @@
     <div class="heritage-card p-3 rounded-lg w-full max-w-[400px] grid grid-cols-2 gap-3">
         <div>
             <h4 id="loss-title-1" class="text-amber-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Your Losses</h4>
-            <div id="white-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/40 p-1.5 rounded min-h-[36px] border border-stone-900"></div>
+            <div id="white-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/30 p-1.5 rounded min-h-[36px] border border-stone-900/40"></div>
         </div>
         <div>
             <h4 id="loss-title-2" class="text-red-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Computer Losses</h4>
-            <div id="black-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/40 p-1.5 rounded min-h-[36px] border border-stone-900"></div>
+            <div id="black-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/30 p-1.5 rounded min-h-[36px] border border-stone-900/40"></div>
         </div>
     </div>
 
-    <div id="gameOverModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
-        <div class="bg-stone-950 border border-amber-500 p-6 rounded-xl max-w-xs w-full text-center shadow-2xl">
+    <div id="gameOverModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
+        <div class="bg-stone-950/95 border border-amber-500 p-6 rounded-xl max-w-xs w-full text-center shadow-2xl backdrop-blur-md">
             <div id="modalIcon" class="text-4xl mb-2">⚜️</div>
             <h2 id="modalTitle" class="text-xl font-black text-amber-500 tracking-wide uppercase">Battle Settled</h2>
             <div id="modalDesc" class="text-stone-400 text-xs my-3 font-sans leading-relaxed"></div>
@@ -234,7 +239,6 @@
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // আপনার Render ব্যাকএন্ড সার্ভার থেকে প্রাপ্ত আসল গ্লোবাল ইউজার ডেটা
                     const liveOnline = data.onlineNow || 1;
                     const liveBattles = data.inBattles || 0;
                     
@@ -242,13 +246,11 @@
                     document.getElementById('active-matches').innerText = liveBattles;
                 }
             } catch (error) {
-                // নেটওয়ার্ক ফেইল বা লোকাল ডেভেলপমেন্টের জন্য ফলব্যাক ভ্যালু
                 document.getElementById('online-users').innerText = "1";
                 document.getElementById('active-matches').innerText = (gameMetrics.matchMoveHistory.length > 0 && !isGameOver) ? "1" : "0";
             }
         }
 
-        // ইউজার গেম শুরু করলে বা শেষ করলে ব্যাকএন্ডে অ্যাক্টিভিটি সিঙ্ক করার মেকানিজম
         async function reportMatchActivity(status) {
             try {
                 await fetch(`${RENDER_API_URL}/report-activity`, {
@@ -259,7 +261,6 @@
             } catch (e) {}
         }
 
-        // Synchronize Global Strategic Repositories
         async function loadGlobalDatabase() {
             try {
                 const response = await fetch(`${RENDER_API_URL}/get-strategies`);
@@ -319,8 +320,8 @@
             resetInitialSetup();
             modalElement.classList.add('hidden');
             
-            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded font-sans shadow' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/40';
-            document.getElementById('btnComputer').className = currentMode === 'Vs-Computer' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded font-sans shadow' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/40';
+            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600/80 text-stone-950 rounded font-sans shadow border border-amber-500/30' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/30';
+            document.getElementById('btnComputer').className = currentMode === 'Vs-Computer' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600/80 text-stone-950 rounded font-sans shadow border border-amber-500/30' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/30';
             
             if (currentMode === 'Vs-Computer') {
                 document.getElementById('loss-title-1').innerText = "💀 Your Losses";
@@ -330,12 +331,11 @@
                 document.getElementById('loss-title-2').innerText = "💀 Player 2 Losses";
             }
             createBoard();
-            reportMatchActivity("ended"); // গেম রিসেট হলে অ্যাক্টিভিটি ক্লিয়ার হবে
+            reportMatchActivity("ended"); 
         }
 
         function generateTeachingReport(userWon) {
-            if (currentMode !== 'Vs-Computer') return "Match Processed Successfully.";
-            if (userWon) {
+            if (currentMode !== '2-Player' && userWon) {
                 gameMetrics.currentStage = 3; 
                 if(gameMetrics.matchMoveHistory.length > 0) {
                     syncTrapToDatabase(gameMetrics.matchMoveHistory.slice(-2).join("->"));
@@ -348,10 +348,10 @@
         function showEndGameModal(title, description, icon, userWon) {
             const teachingReport = generateTeachingReport(userWon);
             document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalDesc').innerHTML = `<span class="block mb-3">${description}</span><div class="bg-stone-900 p-2.5 text-left text-amber-500 text-[11px] font-sans leading-relaxed whitespace-pre-line border border-amber-900/40">${teachingReport}</div>`;
+            document.getElementById('modalDesc').innerHTML = `<span class="block mb-3">${description}</span><div class="bg-stone-900/90 p-2.5 text-left text-amber-500 text-[11px] font-sans leading-relaxed whitespace-pre-line border border-amber-900/40">${teachingReport}</div>`;
             document.getElementById('modalIcon').innerText = icon;
             modalElement.classList.remove('hidden');
-            reportMatchActivity("ended"); // গেম ওভার হলে ম্যাচ সক্রিয় তালিকা থেকে বাদ যাবে
+            reportMatchActivity("ended"); 
         }
 
         function checkLegalMove(piece, fromR, fromC, toR, toC) {
@@ -481,7 +481,6 @@
                     return;
                 }
 
-                // ইউজার যখনই প্রথম চাল চালবে, সে সক্রিয়ভাবে খেলছে (In Battles) হিসেবে সাবমিট হবে
                 if (gameMetrics.matchMoveHistory.length === 0) {
                     reportMatchActivity("playing");
                 }
@@ -590,7 +589,6 @@
             createBoard();
         }
 
-        // প্রতি ৫ সেকেন্ড পর পর আপনার Render ব্যাকএন্ড এপিআই থেকে একদম রিয়েল লাইভ কাউন্ট রিকোয়েস্ট করা হবে
         loadGlobalDatabase();
         updateLiveTrafficAnalytics();
         setInterval(updateLiveTrafficAnalytics, 5000); 
