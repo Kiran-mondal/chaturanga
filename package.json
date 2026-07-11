@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "main": "server.js",
-  "dependencies": {
-    "express": "^4.19.0",
-    "pg": "^8.11.0"
+  "scripts": {
+    "start": "node server.js"
   },
-  "engines": {
-    "node": ">=18.0.0"
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
   }
 }
