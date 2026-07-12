@@ -1,14 +1,15 @@
 const express = require('express');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit'); // 🔒 সিকিউরিটি রেট লিমিটার যোগ করা হলো
+const path = require('path'); // 🛠️ পাথ মডিউল যোগ করা হলো পেজ লোড করার জন্য
+const rateLimit = require('express-rate-limit'); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 🛡️ ১. স্প্যামিং এবং DDOS প্রোটেকশন (Missing Rate Limiting ফিক্স)
+// 🛡️ ১. স্প্যামিং এবং DDOS প্রোটেকশন
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // ১৫ মিনিট সময়
-    max: 100, // এই সময়ের মধ্যে একটি আইপি থেকে সর্বোচ্চ ১০০টি রিকোয়েস্ট পাঠানো যাবে
+    windowMs: 15 * 60 * 1000, 
+    max: 100, 
     message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
     standardHeaders: true, 
     legacyHeaders: false, 
@@ -18,15 +19,12 @@ const apiLimiter = rateLimit({
 app.use(cors());
 app.use(express.json());
 
-// 🛡️ ২. প্রাইভেট ফাইল এক্সপোজার রোধ করা (Exposure of Private Files ফিক্স)
-// এটি নিশ্চিত করে যে আপনার সার্ভারের ভেতরের কোনো সিক্রেট ফাইল ব্রাউজারে দেখা যাবে না, শুধুমাত্র 'public' ফোল্ডারটি এক্সেস করা যাবে।
-app.use(express.static('public')); 
-
 // গ্লোবাল এপিআই রাউটে রেট লিমিটার অ্যাপ্লাই করা হলো
 app.use('/api/', apiLimiter);
 
-// 📊 ইন-মেমোরি ট্রাফিক এবং ম্যাচ ডেটা স্টোরেজ
+// 📊 ইন-মে-মোরি ট্রাফিক এবং ম্যাচ ডেটা স্টোরেজ
 let activeVisitors = new Map(); 
+let activeMatches = new Map();
 let strategyTraps = [];
 
 // ⏱️ নিষ্ক্রিয় ইউজারদের ট্র্যাকার থেকে সরানোর মেকানিজম (cleanup)
@@ -63,7 +61,6 @@ app.get('/api/live-counters', (req, res) => {
 });
 
 // 📡 রুট ২: রিয়েল-টাইম অ্যাক্টিভিটি রিপোর্টার
-let activeMatches = new Map();
 app.post('/api/report-activity', (req, res) => {
     const { status, mode, visitorId, lastAction } = req.body;
     if (visitorId) {
@@ -82,7 +79,7 @@ app.post('/api/report-activity', (req, res) => {
     res.json({ success: true });
 });
 
-// 📡 রুট ৩: স্ট্র্যাটেজি সেভ এপিআই
+// 📡 রুট ③: স্ট্র্যাটেজি সেভ এপিআই
 app.post('/api/save-strategy', (req, res) => {
     const { move, timestamp } = req.body;
     if (move) {
@@ -96,6 +93,15 @@ app.post('/api/save-strategy', (req, res) => {
 app.get('/api/get-strategies', (req, res) => {
     res.json({ traps: strategyTraps.map(t => t.move) });
 });
+
+// 🛠️ 🛡️ [CRITICAL FIX]: 'Cannot GET /' এরর সমাধান
+// আপনার ফ্রন্টএন্ড ফাইলটি (যেমন index.html) যদি গিটহাবের মেইন ডিরেক্টরিতে থাকে, তবে এটি সরাসরি সেটিকে লোড করবে।
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html')); 
+});
+
+// যদি আপনার কোনো ইমেজ বা এক্সট্রা সিএসএস ফাইল মেইন ডিরেক্টরিতে থাকে, সেগুলোকে এক্সেস দেওয়ার জন্য:
+app.use(express.static(__dirname));
 
 // সার্ভার স্টার্ট
 app.listen(PORT, () => {
