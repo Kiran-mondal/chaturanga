@@ -194,10 +194,9 @@
             "Raja": "⚜️", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "⚔️" 
         };
 
-        // 🆔 Device-Specific Unique Session Initialization
+        // 🆔 Standard UUID Generation for Modern Browsers (Android 10+)
         if (!localStorage.getItem('chaturanga_visitor_uid')) {
-            const uniqueId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'uid-' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
-            localStorage.setItem('chaturanga_visitor_uid', uniqueId);
+            localStorage.setItem('chaturanga_visitor_uid', crypto.randomUUID());
         }
         const VISITOR_ID = localStorage.getItem('chaturanga_visitor_uid');
 
@@ -222,7 +221,7 @@
         let highlightedMoves = [];
         let isPlayer1Turn = true; 
 
-        // 🟢 True Device-Specific Real-Time Traffic Syncer
+        // 🟢 Modern Real-Time Traffic Syncer
         async function updateLiveTrafficAnalytics() {
             try {
                 const response = await fetch(`${RENDER_API_URL}/live-counters?visitorId=${VISITOR_ID}`);
@@ -394,8 +393,7 @@
                 }
             }
             updateGraveyardUI();
-        }
-                    function handleSquareClick(row, col) {
+        }        function handleSquareClick(row, col) {
             if (isGameOver) return;
             const squareId = `${row}-${col}`, targetPiece = initialSetup[squareId];
 
@@ -498,3 +496,5 @@
     </script>
 </body>
 </html>
+
+            
