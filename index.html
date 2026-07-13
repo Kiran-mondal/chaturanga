@@ -157,7 +157,7 @@
     
         <script>
         // 🚀 আপনার Vercel API ডোমেন কনফিগারেশন
-        const VERCEL_API_URL = "https://chaturanga-seven.vercel.app/api"; 
+        const NETLIFY_API_URL = "https://chaturanga-online.netlify.app/"; 
 
         const pieceSigns = { 
             "Raja": "⚜️", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "⚔️" 
@@ -193,7 +193,7 @@
         // 🌐 Vercel থেকে কম্পিউটারের জন্য গ্লোবাল কৌশল লোড করা
         async function loadGlobalAIDatabase() {
             try {
-                const response = await fetch(`${VERCEL_API_URL}/get-strategies`);
+                const response = await fetch(`${NETLIFY_API_URL}/get-strategies`);
                 if (response.ok) {
                     const data = await response.json();
                     aiDatabase.userWinningTraps = data.traps || [];
@@ -207,7 +207,7 @@
         // 💾 ইউজারের নতুন কৌশল কম্পিউটারের স্মৃতিতে সেভ করা
         async function syncTrapToVercelDatabase(winningMove) {
             try {
-                await fetch(`${VERCEL_API_URL}/save-strategy`, {
+                await fetch(`${NETLIFY_API_URL}/save-strategy`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ move: winningMove })
