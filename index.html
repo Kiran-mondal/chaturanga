@@ -317,7 +317,6 @@
             reportMatchActivity("ended", "Battle restarted"); 
         }
 
-        // 🎭 Secret Shield: পেছনের আসল টেকনোলজি সম্পূর্ণ গোপন করা হলো
         function generateTeachingReport(userWon) {
             if (currentMode !== '2-Player' && userWon) {
                 gameMetrics.currentStage = 3; 
@@ -491,7 +490,7 @@
             isPlayer1Turn = true; createBoard();
         }
 
-                // 🚀 Performance Fix: ইনিশিয়াল পেজ লোড ফাস্ট করতে এপিআই কলগুলোকে ১ সেকেন্ড ডিফার করা হলো
+        // 🚀 Performance Fix: ইনিশিয়াল পেজ লোড ফাস্ট করতে এপিআই কলগুলোকে ১ সেকেন্ড ডিফার (Delay) করা হলো
         triggerReset();
         
         setTimeout(() => {
