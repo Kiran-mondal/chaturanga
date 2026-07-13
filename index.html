@@ -2,19 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- 🛠️ Accessibility Fix: ইউজারদের জুম করার স্বাধীনতা দেওয়া হলো -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- 🚀 SEO Optimization Meta Tags -->
     <title>Chaturanga Online - Play Royal Sandalwood Ashtapada Game</title>
     <meta name="description" content="Play the ancient Indian chess game Chaturanga online. Battle against a smart, adaptive computer engine or invite a friend for a pass-and-play match. No download required!">
     <meta name="keywords" content="Chaturanga, ancient chess, Ashtapada, Indian board game, play Chaturanga online, chess origins, historical board game">
     <meta name="author" content="Kiran Mondal">
 
+    <!-- 🌐 Social Media Sharing Optimization (Open Graph) -->
     <meta property="og:title" content="Chaturanga Online - Royal Sandalwood Ashtapada Game">
     <meta property="og:description" content="Challenge the classic balanced computer engine in a historical game of Chaturanga. Experience premium tactical board gaming.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1000&auto=format&fit=crop">
     <meta property="og:type" content="website">
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- 🚀 SPEED/PERFORMANCE FIX: defer ব্যবহার করে ব্রাউজারের রেন্ডার-ব্লকিং জ্যাম সম্পূর্ণ কাটানো হলো -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
+    
     <style>
         /* 🌌 Ambient Background Animation */
         @keyframes ambientGlow {
@@ -126,6 +131,7 @@
 </head>
 <body class="text-amber-100 min-h-screen flex flex-col items-center p-3 font-serif">
 
+    <!-- 🏛️ Accessibility Fix: স্ক্রিন রিডারের জন্য মেইন ল্যান্ডমার্ক যোগ করা হলো -->
     <main class="w-full max-w-[400px] flex flex-col items-center">
 
         <div class="text-center my-3 select-none">
@@ -133,6 +139,7 @@
             <p class="text-amber-600/80 text-[10px] mt-0.5 font-sans tracking-widest uppercase">Royal Sandalwood Ashtapada Engine</p>
         </div>
 
+        <!-- 🟢 Advanced Multi-Device Traffic Tracker (Android 10-17 Optimized) -->
         <div class="heritage-card p-3 rounded-lg w-full mb-3 border border-amber-500/20 shadow-xl">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
@@ -152,6 +159,7 @@
             </div>
         </div>
 
+        <!-- System Control Hub -->
         <div id="mode-panel" class="flex gap-2 mb-4 heritage-card p-1.5 rounded-lg w-full justify-between items-center">
             <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900/60 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/30">
                 👥 Pass & Play
@@ -164,22 +172,29 @@
             </button>
         </div>
 
+        <!-- Wooden Board Container -->
         <div class="w-full flex justify-center mb-4">
             <div id="board" class="ashtapada-board"></div>
         </div>
 
+        <!-- Casualty Tracking System -->
         <div class="heritage-card p-3 rounded-lg w-full grid grid-cols-2 gap-3">
             <div>
+                <!-- 🛠️ Navigation Fix: h4 থেকে পরিবর্তন করে সিকোয়েন্সিয়াল h2 করা হলো -->
                 <h2 id="loss-title-1" class="text-amber-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Your Losses</h2>
                 <div id="white-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/30 p-1.5 rounded min-h-[36px] border border-stone-900/40"></div>
             </div>
             <div>
+                <!-- 🛠️ Navigation Fix: h4 থেকে পরিবর্তন করে সিকোয়েন্সিয়াল h2 করা হলো -->
                 <h2 id="loss-title-2" class="text-red-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Computer Losses</h2>
                 <div id="black-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/30 p-1.5 rounded min-h-[36px] border border-stone-900/40"></div>
             </div>
         </div>
 
-    </main> <div id="gameOverModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
+    </main> <!-- 🏛️ মেইন ল্যান্ডমার্ক শেষ -->
+
+    <!-- Match Outcome Modal Window -->
+    <div id="gameOverModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
         <div class="bg-stone-950/95 border border-amber-500 p-6 rounded-xl max-w-xs w-full text-center shadow-2xl backdrop-blur-md">
             <div id="modalIcon" class="text-4xl mb-2">⚜️</div>
             <h2 id="modalTitle" class="text-xl font-black text-amber-500 tracking-wide uppercase">Battle Settled</h2>
@@ -456,7 +471,7 @@
                 if (!piece.isWhite) {
                     const [fR, fC] = fromKey.split('-').map(Number);
                     for (let tR = 0; tR < 8; tR++) {
-                        for (let tC = 0; tC < 8; tC++) {
+                        for (let tC = 0; tC < 8; c++) {
                             if (checkLegalMove(piece, fR, fC, tR, tC)) {
                                 const target = initialSetup[`${tR}-${tC}`]; let priorityValue = 0;
                                 if (target) {
@@ -490,7 +505,7 @@
             isPlayer1Turn = true; createBoard();
         }
 
-        // 🚀 Performance Fix: ইনিশিয়াল পেজ লোড ফাস্ট করতে এপিআই কলগুলোকে ১ সেকেন্ড ডিফার (Delay) করা হলো
+        // 🚀 Performance Optimization: পেজ লোড ফাস্ট করতে এপিআই এক্সিকিউশন ডিফার করা হলো
         triggerReset();
         
         setTimeout(() => {
