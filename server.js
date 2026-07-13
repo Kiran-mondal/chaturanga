@@ -1,33 +1,28 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const rateLimit = require('express-rate-limit'); 
-const { Pool } = require('pg'); // 🐘 PostgreSQL মডিউল যোগ করা হলো
+import { Hono } from 'hono'
+import { handle } from 'hono/vercel'
+import { cors } from 'hono/cors'
+import { logger } from 'hono/logger'
+import pg from 'pg'
+const { Pool } = pg
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+// 🚀 Hono অ্যাপ ইনিশিয়েশন (/api বেস পাথ সহ)
+const app = new Hono().basePath('/api')
 
-// 🛡️ স্প্যামিং এবং DDOS প্রোটেকশন
-const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, 
-    max: 100, 
-    message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
-    standardHeaders: true, 
-    legacyHeaders: false, 
-});
+// 📝 লগার এবং 🛡️ CORS মিডলওয়্যার যুক্ত করা
+app.use('*', logger())
+app.use('*', cors({
+    origin: '*',
+    allowMethods: ['GET', 'POST', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'visitorId']
+}))
 
-// মিডলওয়্যার কনফিগারেশন
-app.use(cors());
-app.use(express.json());
-app.use('/api/', apiLimiter);
-
-// 🐘 নিয়ন ডাটাবেজ কানেকশন (রেন্ডারের Environment Variable থেকে সরাসরি লিংক নেবে)
+// 🐘 নিয়ন ডাটাবেজ কানেকশন (Environment Variable থেকে সরাসরি লিংক নেবে)
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false } // নিয়ন ডাটাবেজের সিকিউর কানেকশনের জন্য এটি জরুরি
-});
+    ssl: { rejectUnauthorized: false }
+})
 
-// 🛠️ ডাটাবেজে টেবিল তৈরি করার অটোমেটেড লজিক (টেবিল না থাকলে নিজে তৈরি হবে)
+// 🛠️ ডাটাবেজে টেবিল তৈরি করার অটোমেটেড লজিক
 async function initializeDatabase() {
     try {
         await pool.query(`
@@ -37,94 +32,95 @@ async function initializeDatabase() {
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        console.log("Neon Database Tables Synced Successfully!");
+        console.log("Neon Database Tables Synced Successfully via Hono!");
     } catch (err) {
         console.error("Error initializing database:", err);
     }
 }
-initializeDatabase();
+initializeDatabase()
 
-// 📊 ইন-মেমোরি লাইভ ভিজিটর ট্র্যাকিং (এটি রিয়েল-টাইম হওয়ায় ডাটাবেজে সেভ করার দরকার নেই)
-let activeVisitors = new Map(); 
-let activeMatches = new Map();
+// 📊 ইন-মেমোরি লাইভ ভিজিটর ও ম্যাচ ট্র্যাকিং
+let activeVisitors = new Map()
+let activeMatches = new Map()
 
+// অলস ভিজিটরদের পরিষ্কার করার ইন্টারভাল
 setInterval(() => {
-    const now = Date.now();
+    const now = Date.now()
     for (let [vid, lastSeen] of activeVisitors.entries()) {
-        if (now - lastSeen > 12000) activeVisitors.delete(vid);
+        if (now - lastSeen > 12000) activeVisitors.delete(vid)
     }
-}, 4000);
+}, 4000)
 
 // 📡 রুট ১: লাইভ কাউন্টার এপিআই
-app.get('/api/live-counters', (req, res) => {
-    const visitorId = req.query.visitorId;
-    if (visitorId) activeVisitors.set(visitorId, Date.now());
+app.get('/live-counters', (c) => {
+    const visitorId = c.req.query('visitorId')
+    if (visitorId) activeVisitors.set(visitorId, Date.now())
 
     let activeMatchesCount = 0;
-    const now = Date.now();
+    const now = Date.now()
     for (let [vid, statusObj] of activeMatches.entries()) {
         if (now - statusObj.timestamp > 12000) {
-            activeMatches.delete(vid);
+            activeMatches.delete(vid)
         } else if (statusObj.status === "playing") {
-            activeMatchesCount++;
+            activeMatchesCount++
         }
     }
 
-    res.json({ onlineNow: activeVisitors.size, inBattles: activeMatchesCount });
-});
+    return c.json({ onlineNow: activeVisitors.size, inBattles: activeMatchesCount })
+})
 
 // 📡 রুট ২: রিয়েল-টাইম অ্যাক্টিভিটি রিপোর্টার
-app.post('/api/report-activity', (req, res) => {
-    const { status, mode, visitorId, lastAction } = req.body;
-    if (visitorId) {
-        activeVisitors.set(visitorId, Date.now());
-        if (status === "ended") {
-            activeMatches.delete(visitorId);
-        } else {
-            activeMatches.set(visitorId, {
-                status: status,
-                mode: mode,
-                lastAction: lastAction || "",
-                timestamp: Date.now()
-            });
+app.post('/report-activity', async (c) => {
+    try {
+        const body = await c.req.json()
+        const { status, mode, visitorId, lastAction } = body
+
+        if (visitorId) {
+            activeVisitors.set(visitorId, Date.now())
+            if (status === "ended") {
+                activeMatches.delete(visitorId)
+            } else {
+                activeMatches.set(visitorId, {
+                    status: status,
+                    mode: mode,
+                    lastAction: lastAction || "",
+                    timestamp: Date.now()
+                })
+            }
         }
+        return c.json({ success: true })
+    } catch (err) {
+        return c.json({ success: false, error: err.message }, 400)
     }
-    res.json({ success: true });
-});
+})
 
 // 📡 রুট ৩: স্ট্র্যাটেজি সেভ এপিআই (নিয়ন ডাটাবেজে সেভ হবে)
-app.post('/api/save-strategy', async (req, res) => {
-    const { move } = req.body;
-    if (move) {
-        try {
-            await pool.query('INSERT INTO strategy_traps (move) VALUES ($1)', [move]);
-            res.json({ success: true, message: "Strategy trained into Neon DB!" });
-            return;
-        } catch (err) {
-            console.error(err);
+app.post('/save-strategy', async (c) => {
+    try {
+        const body = await c.req.json()
+        const { move } = body
+
+        if (move) {
+            await pool.query('INSERT INTO strategy_traps (move) VALUES ($1)', [move])
+            return c.json({ success: true, message: "Strategy trained into Neon DB via Hono!" })
         }
+        return c.json({ success: false, message: "No move provided" }, 400)
+    } catch (err) {
+        console.error(err)
+        return c.json({ success: false, error: err.message }, 500)
     }
-    res.json({ success: false });
-});
+})
 
 // 📡 রুট ৪: স্ট্র্যাটেজি গেট এপিআই (নিয়ন ডাটাবেজ থেকে এআই চালগুলো রিড করবে)
-app.get('/api/get-strategies', async (req, res) => {
+app.get('/get-strategies', async (c) => {
     try {
-        const result = await pool.query('SELECT move FROM strategy_traps ORDER BY id DESC LIMIT 50');
-        const traps = result.rows.map(row => row.move);
-        res.json({ traps: traps });
+        const result = await pool.query('SELECT move FROM strategy_traps ORDER BY id DESC LIMIT 50')
+        const traps = result.rows.map(row => row.move)
+        return c.json({ traps: traps })
     } catch (err) {
-        res.json({ traps: [] });
+        return c.json({ traps: [] })
     }
-});
+})
 
-// 🛠️ রুট পাথ ফিক্স
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html')); 
-});
-app.use(express.static(path.join(__dirname, 'public')));
-
-// সার্ভার স্টার্ট
-app.listen(PORT, () => {
-    console.log(`Chaturanga Adaptive Engine connected to Neon & active on port ${PORT}`);
-});
+// 🚀 Vercel সার্ভারলেস এনভায়রনমেন্টের জন্য এক্সপোর্ট হ্যান্ডলার
+export default handle(app)
