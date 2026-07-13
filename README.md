@@ -10,7 +10,7 @@ This project brings the 8x8 uncheckered **Ashtapada** board to life with dynamic
 ## 🌍 Live Demo & Web App Link
 Anyone can play the game instantly without installing anything. Click the official public web link below to play directly in your browser:
 
-👉 **[Play Chaturanga Live on Vercel](https://chaturanga-seven.vercel.app)**
+👉 **[Play Chaturanga Live on Netlify](chaturanga-online.netlify.app)**
 
 ---
 
