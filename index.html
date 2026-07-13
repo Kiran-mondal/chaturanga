@@ -19,16 +19,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
      <style>
-        /* 🌌 সিনেমাটিক ব্যাকগ্রাউন্ড অ্যানিমেশন (আগের মতো পাশে পাশে নড়াচড়া করবে) */
+        /* 🌌 ছবিটাকে ডানে-বামে (সাইডে) আলতো করে সরানোর প্রিমিয়াম অ্যানিমেশন */
 @keyframes ambientGlow {
     0% {
-        transform: scale(1.1) translate(0, 0) translateZ(0);
+        transform: scale(1.15) translate(0%, 0%) translateZ(0);
     }
     50% {
-        transform: scale(1.15) translate(-15px, -10px) translateZ(0); /* হালকা পাশে এবং ওপরে সরবে */
+        transform: scale(1.15) translate(-4%, 0%) translateZ(0); /* শুধু বাম দিকে (সাইডে) ৪% সরবে, ওপরে উঠবে না */
     }
     100% {
-        transform: scale(1.1) translate(0, 0) translateZ(0);
+        transform: scale(1.15) translate(0%, 0%) translateZ(0);
     }
 }
 
@@ -41,25 +41,26 @@ body {
     padding: 0;
 }
 
-/* 🚀 জিপিইউ লেয়ারে ছবি ফিক্সড রেখে অ্যানিমেশন চালানো */
+/* 🚀 ব্যাকগ্রাউন্ডের ছবিকে মাঝ বরাবর সেট করে জিপিইউ মোডে অ্যানিমেশন চালানো */
 body::before {
     content: "";
     position: fixed;
-    top: -5%; /* অ্যানিমেশনের সময় বর্ডার যেন কেটে না যায় */
-    left: -5%;
-    width: 110%;
-    height: 110%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: -1;
     background-image: 
-        linear-gradient(rgba(18, 9, 3, 0.45), rgba(8, 2, 0, 0.65)),
+        linear-gradient(rgba(18, 9, 3, 0.48), rgba(8, 2, 0, 0.68)),
         url('https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1000&auto=format&fit=crop');
     background-size: cover;
-    background-position: center;
+    background-position: center center; /* ফুল ও চিত্রকর্মটি একদম মাঝখানে ফিক্সড থাকবে */
     background-repeat: no-repeat;
     will-change: transform;
     transform: translateZ(0); /* Hardware Acceleration ⚡ */
-    animation: ambientGlow 25s ease-in-out infinite; /* একটু সময় বাড়িয়ে ২৫ সেকেন্ড করা হলো যেন আরও স্মুথ লাগে */
+    animation: ambientGlow 28s ease-in-out infinite; /* ২৮ সেকেন্ড পর পর ডানে-বামে স্মুথলি দুলবে */
 }
+         
          
 
         /* 👑 Main Ashtapada Board */
