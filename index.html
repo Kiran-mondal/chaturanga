@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Chaturanga Online - Play Royal Sandalwood Ashtapada Game</title>
     <meta name="description" content="Play the ancient Indian chess game Chaturanga online. Battle against a smart, adaptive computer engine or invite a friend for a pass-and-play match. No download required!">
@@ -126,58 +126,60 @@
 </head>
 <body class="text-amber-100 min-h-screen flex flex-col items-center p-3 font-serif">
 
-    <div class="text-center my-3 select-none">
-        <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 tracking-widest drop-shadow-lg">चतुरंग (CHATURANGA)</h1>
-        <p class="text-amber-600/80 text-[10px] mt-0.5 font-sans tracking-widest uppercase">Royal Sandalwood Ashtapada Engine</p>
-    </div>
+    <main class="w-full max-w-[400px] flex flex-col items-center">
 
-    <div class="heritage-card p-3 rounded-lg w-full max-w-[400px] mb-3 border border-amber-500/20 shadow-xl">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="pulse-dot"></span>
-                <span class="text-[10px] font-bold tracking-wider font-sans text-stone-300 uppercase">Live Website Status</span>
-            </div>
-            <div class="flex gap-4 text-right">
-                <div>
-                    <span id="online-users" class="text-xs font-bold text-emerald-400 font-sans">1</span>
-                    <span class="block text-[8px] text-stone-400 font-sans uppercase">Online Now</span>
+        <div class="text-center my-3 select-none">
+            <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 tracking-widest drop-shadow-lg">चतुरंग (CHATURANGA)</h1>
+            <p class="text-amber-600/80 text-[10px] mt-0.5 font-sans tracking-widest uppercase">Royal Sandalwood Ashtapada Engine</p>
+        </div>
+
+        <div class="heritage-card p-3 rounded-lg w-full mb-3 border border-amber-500/20 shadow-xl">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="pulse-dot"></span>
+                    <span class="text-[10px] font-bold tracking-wider font-sans text-stone-300 uppercase">Live Website Status</span>
                 </div>
-                <div class="border-l border-amber-900/30 pl-4">
-                    <span id="active-matches" class="text-xs font-bold text-amber-400 font-sans">0</span>
-                    <span class="block text-[8px] text-stone-400 font-sans uppercase">In Battles</span>
+                <div class="flex gap-4 text-right">
+                    <div>
+                        <span id="online-users" class="text-xs font-bold text-emerald-400 font-sans">1</span>
+                        <span class="block text-[8px] text-stone-400 font-sans uppercase">Online Now</span>
+                    </div>
+                    <div class="border-l border-amber-900/30 pl-4">
+                        <span id="active-matches" class="text-xs font-bold text-amber-400 font-sans">0</span>
+                        <span class="block text-[8px] text-stone-400 font-sans uppercase">In Battles</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="mode-panel" class="flex gap-2 mb-4 heritage-card p-1.5 rounded-lg w-full max-w-[400px] justify-between items-center">
-        <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900/60 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/30">
-            👥 Pass & Play
-        </button>
-        <button id="btnComputer" onclick="switchMode('Vs-Computer')" class="flex-1 py-2 text-[11px] font-bold bg-amber-600/80 text-stone-950 rounded cursor-pointer transition font-sans shadow-md border border-amber-500/30">
-            💻 VS Computer
-        </button>
-        <button onclick="triggerReset()" class="px-3 py-2 text-[11px] font-bold bg-stone-950/70 text-red-400 rounded border border-red-900/30 cursor-pointer transition font-sans">
-            🔄 Reset
-        </button>
-    </div>
-
-    <div class="w-full max-w-[400px] flex justify-center mb-4">
-        <div id="board" class="ashtapada-board"></div>
-    </div>
-
-    <div class="heritage-card p-3 rounded-lg w-full max-w-[400px] grid grid-cols-2 gap-3">
-        <div>
-            <h4 id="loss-title-1" class="text-amber-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Your Losses</h4>
-            <div id="white-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/30 p-1.5 rounded min-h-[36px] border border-stone-900/40"></div>
+        <div id="mode-panel" class="flex gap-2 mb-4 heritage-card p-1.5 rounded-lg w-full justify-between items-center">
+            <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900/60 text-amber-400 rounded cursor-pointer transition font-sans border border-amber-900/30">
+                👥 Pass & Play
+            </button>
+            <button id="btnComputer" onclick="switchMode('Vs-Computer')" class="flex-1 py-2 text-[11px] font-bold bg-amber-600/80 text-stone-950 rounded cursor-pointer transition font-sans shadow-md border border-amber-500/30">
+                💻 VS Computer
+            </button>
+            <button onclick="triggerReset()" class="px-3 py-2 text-[11px] font-bold bg-stone-950/70 text-red-400 rounded border border-red-900/30 cursor-pointer transition font-sans">
+                🔄 Reset
+            </button>
         </div>
-        <div>
-            <h4 id="loss-title-2" class="text-red-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Computer Losses</h4>
-            <div id="black-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/30 p-1.5 rounded min-h-[36px] border border-stone-900/40"></div>
-        </div>
-    </div>
 
-    <div id="gameOverModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
+        <div class="w-full flex justify-center mb-4">
+            <div id="board" class="ashtapada-board"></div>
+        </div>
+
+        <div class="heritage-card p-3 rounded-lg w-full grid grid-cols-2 gap-3">
+            <div>
+                <h2 id="loss-title-1" class="text-amber-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Your Losses</h2>
+                <div id="white-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/30 p-1.5 rounded min-h-[36px] border border-stone-900/40"></div>
+            </div>
+            <div>
+                <h2 id="loss-title-2" class="text-red-400 font-bold text-[10px] mb-1 font-sans uppercase tracking-wider">💀 Computer Losses</h2>
+                <div id="black-graveyard" class="flex flex-wrap gap-1 text-lg bg-stone-950/30 p-1.5 rounded min-h-[36px] border border-stone-900/40"></div>
+            </div>
+        </div>
+
+    </main> <div id="gameOverModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
         <div class="bg-stone-950/95 border border-amber-500 p-6 rounded-xl max-w-xs w-full text-center shadow-2xl backdrop-blur-md">
             <div id="modalIcon" class="text-4xl mb-2">⚜️</div>
             <h2 id="modalTitle" class="text-xl font-black text-amber-500 tracking-wide uppercase">Battle Settled</h2>
@@ -315,16 +317,16 @@
             reportMatchActivity("ended", "Battle restarted"); 
         }
 
+        // 🎭 Secret Shield: পেছনের আসল টেকনোলজি সম্পূর্ণ গোপন করা হলো
         function generateTeachingReport(userWon) {
             if (currentMode !== '2-Player' && userWon) {
                 gameMetrics.currentStage = 3; 
                 if(gameMetrics.matchMoveHistory.length > 0) syncTrapToDatabase(gameMetrics.matchMoveHistory.slice(-2).join("->"));
-                return "🎯 Exceptional Tactics! The computer has detected you as an advanced master-level competitor and calibrated its calculations to Stage 3 for maximum challenge.";
+                return "🎯 Exceptional Tactics! The Chaturanga Board Game Engine has analyzed your movement patterns and calibrated its calculations to Stage 3 for a supreme challenge.";
             }
-            return "🏛️ Strategic Analysis: Control the 4 central cells of the Ashtapada. Utilize your Padati rows to construct unified defensive walls.";
+            return "🏛️ Ancient Strategic Analysis: Control the 4 central cells of the Ashtapada. Utilize your Padati rows to construct unified defensive walls.";
         }
-
-        function showEndGameModal(title, description, icon, userWon) {
+                    function showEndGameModal(title, description, icon, userWon) {
             const teachingReport = generateTeachingReport(userWon);
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalDesc').innerHTML = `<span class="block mb-3">${description}</span><div class="bg-stone-900/90 p-2.5 text-left text-amber-500 text-[11px] font-sans leading-relaxed whitespace-pre-line border border-amber-900/40">${teachingReport}</div>`;
@@ -393,7 +395,9 @@
                 }
             }
             updateGraveyardUI();
-        }        function handleSquareClick(row, col) {
+        }
+
+        function handleSquareClick(row, col) {
             if (isGameOver) return;
             const squareId = `${row}-${col}`, targetPiece = initialSetup[squareId];
 
@@ -415,7 +419,6 @@
                     createBoard(); return;
                 }
 
-                // 📢 Background Data Logging Core
                 let moveLogText = `White moved ${selectedSquare.piece.name} to [${row},${col}]`;
                 if (targetPiece) moveLogText = `White ${selectedSquare.piece.name} captured Black ${targetPiece.name}! 🔥`;
                 reportMatchActivity("playing", moveLogText);
@@ -476,7 +479,6 @@
 
             const chosenMove = availableMoves[0], targetPiece = initialSetup[chosenMove.to];
             
-            // 📢 Bot Action Logger
             let botLogText = `Computer moved ${chosenMove.piece.name} to [${chosenMove.to}]`;
             if (targetPiece) botLogText = `Computer captured your ${targetPiece.name}! ⚠️`;
             reportMatchActivity("playing", botLogText);
@@ -496,5 +498,3 @@
     </script>
 </body>
 </html>
-
-            
