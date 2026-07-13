@@ -122,7 +122,7 @@ app.get('/api/get-strategies', async (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html')); 
 });
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // সার্ভার স্টার্ট
 app.listen(PORT, () => {
