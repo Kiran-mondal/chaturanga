@@ -6,11 +6,10 @@
     <meta name="google-site-verification" content="5GtTZlOTeLNQ70u775QHue-jroUvKrMAuYfzX1BdbUA" />
     <title>Chaturanga - Royal Sandalwood Ashtapada Engine</title>
     
-    <link rel="icon" type="image/svg+xml" href="logo.svg">
-    <link rel="apple-touch-icon" href="logo.svg">
+    <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/Kiran-mondal/Chaturanga/main/logo.svg">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Kiran-mondal/Chaturanga/main/logo.svg">
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
     <style>
         @keyframes ambientGlow {
             0% { background-position: 0% 50%; }
@@ -19,35 +18,33 @@
         }
         
         body {
-    background: #0a0502;
-    background-image: 
-        linear-gradient(rgba(10, 5, 2, 0.75), rgba(5, 2, 0, 0.85)),
-        url('https://images.unsplash.com/photo-1579783928614-a3fb3927b6a5?q=80&w=1000&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    overflow-y: auto;
-    overflow-x: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
+            background: #0a0502;
+            background-image: 
+                linear-gradient(rgba(10, 5, 2, 0.5), rgba(5, 2, 0, 0.75)),
+                url('https://images.unsplash.com/photo-1579783928614-a3fb3927b6a5?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            animation: ambientGlow 25s ease-in-out infinite;
+            overflow-y: auto;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
 
-.heritage-card {
-    background: rgba(20, 10, 5, 0.85);
-    border: 1px solid rgba(180, 83, 9, 0.4);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
-    /* ব্লার প্রপার্টি এখানে অত্যন্ত হালকা রাখা হলো যাতে ভেতরের লেখা বা ডিজাইন ঝাপসা না হয় */
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-}
-        
+        .heritage-card {
+            background: linear-gradient(135deg, rgba(20, 10, 5, 0.6) 0%, rgba(10, 3, 0, 0.75) 100%);
+            border: 1px solid rgba(180, 83, 9, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
 
-    .ashtapada-board {
+        .ashtapada-board {
             width: 100%;
             max-width: 400px;
             aspect-ratio: 1 / 1;
@@ -151,14 +148,14 @@
             <div id="modalIcon" class="text-4xl mb-2">👑</div>
             <h2 id="modalTitle" class="text-xl font-black text-amber-500 tracking-wide uppercase">Battle Settled</h2>
             <p id="modalDesc" class="text-stone-300 text-xs my-3 font-sans leading-relaxed"></p>
-            <button onclick="triggerReset()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-bold rounded-lg shadow-lg hover:from-amber-600 hover:to-amber-700 transition cursor-pointer">
+            <button onclick="triggerReset()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-bold rounded-lg shadow-lg hover:from-amber-600 hover:to-amber-700 transition">
                 🔄 Restart Battle
             </button>
         </div>
     </div>
         <script>
         // Vercel API Configuration
-        const VERCEL_API_URL = "https://chaturanga-ruddy.vercel.app//api";
+        const VERCEL_API_URL = "https://chaturanga-ruddy.vercel.app/api";
 
         const pieceSigns = {
             "Raja": "👑", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🏹", "Padati": "⚔️"
@@ -303,7 +300,8 @@
             }
             return advise;
         }
-                    function showEndGameModal(title, description, icon, userWon) {
+
+        function showEndGameModal(title, description, icon, userWon) {
             const teachingReport = generateAITeachingReport(userWon);
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalDesc').innerHTML = `<span class="block mb-3">${description}</span><div class="text-[11px] bg-amber-500/10 p-2 rounded text-amber-400 border border-amber-500/20">${teachingReport}</div>`;
@@ -394,7 +392,8 @@
             }
             updateGraveyardUI();
         }
-                    async function handleSquareClick(row, col) {
+
+        async function handleSquareClick(row, col) {
             if (isGameOver) return;
             const squareId = `${row}-${col}`;
             const targetPiece = initialSetup[squareId];
