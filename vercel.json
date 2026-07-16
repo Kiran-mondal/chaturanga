@@ -6,11 +6,19 @@
       "use": "@vercel/node"
     },
     {
+      "src": "logo.svg",
+      "use": "@vercel/static"
+    },
+    {
       "src": "index.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/logo.svg",
+      "dest": "/logo.svg"
+    },
     {
       "src": "/get-strategies",
       "dest": "server.js"
