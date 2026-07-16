@@ -12,19 +12,20 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @keyframes ambientGlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% { opacity: 0.7; }
+            50% { opacity: 0.85; }
+            100% { opacity: 0.7; }
         }
         
         body {
             background: #0a0502;
             background-image: 
-                linear-gradient(rgba(10, 5, 2, 0.5), rgba(5, 2, 0, 0.75)),
+                linear-gradient(rgba(10, 5, 2, 0.3), rgba(5, 2, 0, 0.5)),
                 url('https://images.unsplash.com/photo-1579783928614-a3fb3927b6a5?q=80&w=1000&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            background-repeat: no-repeat;
             animation: ambientGlow 25s ease-in-out infinite;
             overflow-y: auto;
             overflow-x: hidden;
