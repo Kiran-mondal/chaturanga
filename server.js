@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // ১. স্ট্যাটিক ফাইল ও লোগো ডিরেক্টরি সার্ভ করার জন্য মিডলওয়্যার (লোগো ফিক্স)
-app.use(express.static(__dirname)); 
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Initialize database connection
 const pool = new Pool({
