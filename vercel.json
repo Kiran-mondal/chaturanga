@@ -4,16 +4,20 @@
     {
       "src": "server.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/logo.svg",
-      "dest": "/logo.svg"
-    },
-    {
       "src": "/api/(.*)",
       "dest": "server.js"
+    },
+    {
+      "src": "/logo.svg",
+      "dest": "/logo.svg"
     },
     {
       "src": "/(.*)",
