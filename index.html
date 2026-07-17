@@ -11,6 +11,10 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background-color: #0c0603;
             background-image: 
@@ -28,6 +32,16 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            animation: bgShift 15s ease-in-out infinite;
+        }
+
+        @keyframes bgShift {
+            0%, 100% {
+                background-position: center top;
+            }
+            50% {
+                background-position: center 2%;
+            }
         }
 
         .heritage-card {
@@ -36,6 +50,18 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(180, 83, 9, 0.35);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+            animation: cardFadeIn 0.6s ease-out;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .ashtapada-board {
@@ -46,12 +72,28 @@
             box-shadow: 0 0 30px rgba(234, 179, 8, 0.25), 0 20px 50px rgba(0, 0, 0, 0.95);
             border-radius: 8px;
             background-color: #5c2c16;
+            animation: boardSlideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes boardSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .ashtapada-square {
             background-color: #ebd1af;
             border: 1px solid #7c2d12;
-            transition: background-color 0.15s ease;
+            transition: background-color 0.15s ease, transform 0.2s ease;
+        }
+
+        .ashtapada-square:hover {
+            transform: translateY(-2px);
         }
 
         .ashtapada-square:nth-child(2n) {
@@ -65,11 +107,36 @@
             opacity: 0.25;
             font-size: 1.8rem;
             font-weight: 300;
+            animation: markerPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes markerPulse {
+            0%, 100% {
+                opacity: 0.15;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.35;
+                transform: scale(1.1);
+            }
         }
 
         .selected {
             background-color: #eab308 !important;
             box-shadow: inset 0 0 12px #7c2d12;
+            animation: selectedPulse 0.6s ease-in-out;
+        }
+
+        @keyframes selectedPulse {
+            0% {
+                box-shadow: inset 0 0 12px #7c2d12, 0 0 0 0 rgba(234, 179, 8, 0.7);
+            }
+            50% {
+                box-shadow: inset 0 0 12px #7c2d12, 0 0 0 8px rgba(234, 179, 8, 0);
+            }
+            100% {
+                box-shadow: inset 0 0 12px #7c2d12, 0 0 0 0 rgba(234, 179, 8, 0);
+            }
         }
 
         .possible-move-marker::before {
@@ -81,11 +148,33 @@
             border-radius: 50%;
             box-shadow: 0 0 10px #10b981;
             z-index: 10;
+            animation: moveMarkerBounce 1.2s ease-in-out infinite;
+        }
+
+        @keyframes moveMarkerBounce {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 10px #10b981;
+            }
+            50% {
+                transform: scale(1.3);
+                box-shadow: 0 0 20px #10b981;
+            }
         }
 
         .possible-capture-marker {
             background-color: #fca5a5 !important;
             box-shadow: inset 0 0 10px #dc2626 !important;
+            animation: captureWarning 0.6s ease-in-out;
+        }
+
+        @keyframes captureWarning {
+            0%, 100% {
+                box-shadow: inset 0 0 10px #dc2626, 0 0 0 0 rgba(220, 38, 38, 0.5);
+            }
+            50% {
+                box-shadow: inset 0 0 10px #dc2626, 0 0 0 10px rgba(220, 38, 38, 0);
+            }
         }
 
         .losses-container {
@@ -93,6 +182,18 @@
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(180, 83, 9, 0.4) transparent;
+            animation: containerSlideIn 0.7s ease-out;
+        }
+
+        @keyframes containerSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .losses-container::-webkit-scrollbar {
@@ -103,6 +204,108 @@
             background-color: rgba(180, 83, 9, 0.4);
             border-radius: 4px;
         }
+
+        .branding-title {
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(217, 119, 6, 0.3), 0 0 20px rgba(234, 179, 8, 0.1);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(217, 119, 6, 0.6), 0 0 30px rgba(234, 179, 8, 0.3);
+            }
+        }
+
+        .status-indicator {
+            animation: indicatorPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes indicatorPulse {
+            0%, 100% {
+                box-shadow: 0 0 4px #10b981;
+            }
+            50% {
+                box-shadow: 0 0 12px #10b981;
+            }
+        }
+
+        .piece-icon {
+            animation: pieceIdle 2s ease-in-out infinite;
+        }
+
+        @keyframes pieceIdle {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .mode-button {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .mode-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+
+        .mode-button:active {
+            transform: translateY(0);
+        }
+
+        #gameOverModal {
+            animation: modalFadeIn 0.4s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-content {
+            animation: modalContentBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalContentBounce {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .graveyard-piece {
+            animation: graveyardFade 0.4s ease-out;
+        }
+
+        @keyframes graveyardFade {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Smooth scroll for the entire page */
+        * {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body class="text-amber-100 min-h-screen flex flex-col items-center p-3 font-serif">
@@ -111,15 +314,15 @@
         
         <!-- Royal Sanskrit Branding (No Crown Logo) -->
         <div class="text-center py-4 select-none flex flex-col items-center gap-1">
-            <h1 class="text-4xl font-serif text-amber-500 tracking-widest font-bold mb-1">चतुरङ्ग</h1>
-            <h2 class="text-3xl font-serif text-amber-500 tracking-widest font-extrabold uppercase mb-1">(CHATURANGA)</h2>
+            <h1 class="text-4xl font-serif text-amber-500 tracking-widest font-bold mb-1 branding-title">चतुरङ्ग</h1>
+            <h2 class="text-3xl font-serif text-amber-500 tracking-widest font-extrabold uppercase mb-1 branding-title">(CHATURANGA)</h2>
             <h3 class="text-[10px] font-sans text-amber-600/90 font-bold tracking-widest uppercase">ROYAL SANDALWOOD ASHTAPADA ENGINE</h3>
         </div>
 
         <!-- Live Website Status Bar -->
         <div class="heritage-card rounded-lg px-4 py-2.5 flex justify-between items-center text-xs border border-amber-600/20">
             <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse status-indicator"></span>
                 <span class="font-sans font-extrabold tracking-wider text-stone-200">LIVE WEBSITE STATUS</span>
             </div>
             <div class="flex gap-4 font-sans text-right">
@@ -136,13 +339,13 @@
 
         <!-- Mode Buttons -->
         <div id="mode-panel" class="flex gap-2 heritage-card p-1.5 rounded-lg justify-between items-center">
-            <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1">
+            <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button">
                 👥 Pass & Play
             </button>
-            <button id="btnAI" onclick="switchMode('Vs-AI')" class="flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1">
+            <button id="btnAI" onclick="switchMode('Vs-AI')" class="flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button">
                 💻 VS Computer
             </button>
-            <button id="btnReset" onclick="triggerReset()" class="px-4 py-2 text-[11px] font-bold bg-stone-950/80 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1">
+            <button id="btnReset" onclick="triggerReset()" class="px-4 py-2 text-[11px] font-bold bg-stone-950/80 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button">
                 🔄 Reset
             </button>
         </div>
@@ -167,11 +370,11 @@
 
     <!-- Game Over Modal -->
     <div id="gameOverModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div class="bg-stone-950/95 border border-amber-500/50 p-6 rounded-xl max-w-xs w-full text-center shadow-2xl">
-            <div id="modalIcon" class="text-4xl mb-2">👑</div>
+        <div class="bg-stone-950/95 border border-amber-500/50 p-6 rounded-xl max-w-xs w-full text-center shadow-2xl modal-content">
+            <div id="modalIcon" class="text-4xl mb-2 piece-icon">👑</div>
             <h2 id="modalTitle" class="text-xl font-black text-amber-500 tracking-wide uppercase">Battle Settled</h2>
             <p id="modalDesc" class="text-stone-300 text-xs my-3 font-sans leading-relaxed"></p>
-            <button onclick="triggerReset()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-bold rounded-lg shadow-lg hover:from-amber-600 hover:to-amber-700 transition cursor-pointer uppercase tracking-wider">
+            <button onclick="triggerReset()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-bold rounded-lg shadow-lg hover:from-amber-600 hover:to-amber-700 transition transform hover:scale-105">
                 🔄 Restart Battle
             </button>
         </div>
@@ -296,8 +499,8 @@
             resetInitialSetup();
             modalElement.classList.add('hidden');
 
-            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider';
-            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider';
+            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button';
+            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button';
 
             if (currentMode === 'Vs-AI') {
                 document.getElementById('loss-title-1').innerText = "💀 YOUR LOSSES";
@@ -403,8 +606,8 @@
         }
 
         function updateGraveyardUI() {
-            document.getElementById('black-graveyard').innerHTML = capturedBlack.map(p => `<span class="inline-block p-1 bg-stone-950/70 rounded border border-amber-500/10">${pieceSigns[p]}</span>`).join('');
-            document.getElementById('white-graveyard').innerHTML = capturedWhite.map(p => `<span class="inline-block p-1 bg-stone-950/70 rounded border border-amber-500/10">${pieceSigns[p]}</span>`).join('');
+            document.getElementById('black-graveyard').innerHTML = capturedBlack.map(p => `<span class="inline-block p-1 bg-stone-950/70 rounded border border-amber-500/10 graveyard-piece">${pieceSigns[p]}</span>`).join('');
+            document.getElementById('white-graveyard').innerHTML = capturedWhite.map(p => `<span class="inline-block p-1 bg-stone-950/70 rounded border border-amber-500/10 graveyard-piece">${pieceSigns[p]}</span>`).join('');
         }
 
         function createBoard() {
@@ -425,7 +628,7 @@
                     if (piece) {
                         const labelColor = piece.isWhite ? 'text-amber-700' : 'text-red-700';
                         square.innerHTML = `
-                            <span class="text-2xl md:text-3xl filter drop-shadow-sm">${pieceSigns[piece.name]}</span>
+                            <span class="text-2xl md:text-3xl filter drop-shadow-sm piece-icon">${pieceSigns[piece.name]}</span>
                             <span class="text-[7px] ${labelColor} font-sans font-extrabold z-10 uppercase tracking-tighter absolute bottom-0.5">${piece.name}</span>
                         `;
                     }
