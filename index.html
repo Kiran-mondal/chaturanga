@@ -81,6 +81,8 @@
             50% { transform: translateY(-3px); }
         }
 
+        .counter-value { font-variant-numeric: tabular-nums; }
+
         * { scroll-behavior: smooth; }
     </style>
 </head>
@@ -95,7 +97,7 @@
             <h3 class="text-[10px] text-amber-600/90 font-bold tracking-widest uppercase">ROYAL SANDALWOOD ASHTAPADA ENGINE</h3>
         </div>
 
-        <!-- Live Status -->
+        <!-- Live Status & Visitor Counter -->
         <div class="heritage-card rounded-lg px-4 py-2.5 flex justify-between items-center text-xs border border-amber-600/20">
             <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 status-indicator"></span>
@@ -103,6 +105,7 @@
             </div>
             <div class="flex gap-4 font-sans text-right">
                 <div><div class="text-amber-500 font-bold">1</div><div class="text-[8px] text-stone-400 font-bold uppercase">ONLINE</div></div>
+                <div><div id="visitorCount" class="text-amber-500 font-bold counter-value">-</div><div class="text-[8px] text-stone-400 font-bold uppercase">VISITORS</div></div>
             </div>
         </div>
 
@@ -142,6 +145,7 @@
 
 <script>
         const VERCEL_API_URL = "https://chaturanga.quarry.dpdns.org/api";
+        const VISITOR_SESSION_KEY = "chaturanga_visitor_tracked";
 
         const pieceSigns = {
             "Raja": "⚜️", "Mantri": "📜", "Gaja": "🐘", "Ashva": "🐎", "Ratha": "🛕", "Padati": "⚔️"
@@ -172,6 +176,52 @@
         let selectedSquare = null;
         let highlightedMoves = [];
         let isPlayer1Turn = true;
+
+        async function incrementVisitorCount() {
+            try {
+                // Check if we've already counted this session
+                const isTracked = sessionStorage.getItem(VISITOR_SESSION_KEY);
+                if (isTracked) {
+                    console.log("Visitor already tracked in this session.");
+                    await fetchVisitorCount();
+                    return;
+                }
+
+                // Increment visitor count
+                const response = await fetch(`${VERCEL_API_URL}/increment-visitor`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ timestamp: new Date().toISOString() })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('visitorCount').innerText = data.count || '-';
+                    sessionStorage.setItem(VISITOR_SESSION_KEY, 'true');
+                    console.log("Visitor count incremented.");
+                } else {
+                    await fetchVisitorCount();
+                }
+            } catch (error) {
+                console.log("Offline fallback - fetching cached count.");
+                await fetchVisitorCount();
+            }
+        }
+
+        async function fetchVisitorCount() {
+            try {
+                const response = await fetch(`${VERCEL_API_URL}/get-visitor-count`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('visitorCount').innerText = data.count || '-';
+                } else {
+                    document.getElementById('visitorCount').innerText = '?';
+                }
+            } catch (error) {
+                console.log("Unable to fetch visitor count.");
+                document.getElementById('visitorCount').innerText = '?';
+            }
+        }
 
         async function loadGlobalAIDatabase() {
             try {
@@ -595,7 +645,9 @@
             createBoard();
         }
 
+        // Initialize on page load
         loadGlobalAIDatabase();
+        incrementVisitorCount();
         triggerReset();
     </script>
 </body>
