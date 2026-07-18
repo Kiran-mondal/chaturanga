@@ -49,6 +49,9 @@
 
         .ashtapada-square:nth-child(2n) { background-color: #d1ab7e; }
         .selected { background-color: #eab308 !important; }
+        .marked-square { background-color: rgba(217, 119, 6, 0.3) !important; }
+        .possible-move-marker { background-color: rgba(34, 197, 94, 0.4) !important; }
+        .possible-capture-marker { background-color: rgba(239, 68, 68, 0.4) !important; }
 
         /* Animations from your code */
         .status-indicator { animation: indicatorPulse 2s ease-in-out infinite; }
@@ -83,7 +86,7 @@
 </head>
 <body class="text-amber-100 min-h-screen flex flex-col items-center p-3 font-serif">
 
-    <div class="w-full max-w-[400px] flex flex-col gap-3 pt-8 mb-0">
+    <div class="w-full max-w-[400px] flex flex-col gap-3 pt-8 mb-8">
         
         <!-- Branding -->
         <div class="text-center py-4 select-none flex flex-col items-center gap-1">
@@ -105,24 +108,38 @@
 
         <!-- Mode Buttons -->
         <div class="flex gap-2 heritage-card p-1.5 rounded-lg justify-between">
-            <button onclick="console.log('2P Mode')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded mode-button">👥 Pass & Play</button>
-            <button onclick="console.log('AI Mode')" class="flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded mode-button">💻 VS Computer</button>
+            <button id="btn2P" onclick="switchMode('2-Player')" class="flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded mode-button">👥 Pass & Play</button>
+            <button id="btnAI" onclick="switchMode('Vs-AI')" class="flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded mode-button">💻 VS Computer</button>
         </div>
 
         <!-- Board -->
         <div class="flex justify-center w-full">
             <div id="board" class="ashtapada-board grid grid-cols-8 gap-0"></div>
         </div>
+
+        <!-- Graveyard Display -->
+        <div class="heritage-card rounded-lg p-3 space-y-2">
+            <div>
+                <h4 id="loss-title-1" class="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-1">💀 YOUR LOSSES</h4>
+                <div id="black-graveyard" class="flex flex-wrap gap-1"></div>
+            </div>
+            <div>
+                <h4 id="loss-title-2" class="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-1">🤖 COMPUTER LOSSES</h4>
+                <div id="white-graveyard" class="flex flex-wrap gap-1"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal -->
     <div id="gameOverModal" class="hidden fixed inset-0 bg-black/85 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
         <div class="bg-stone-950/95 border border-amber-500/50 p-6 rounded-xl max-w-xs w-full text-center modal-content">
-            <div class="text-4xl mb-2 piece-icon">👑</div>
-            <h2 class="text-xl font-black text-amber-500 uppercase">Battle Settled</h2>
-            <button onclick="document.getElementById('gameOverModal').classList.add('hidden')" class="w-full mt-4 py-2 bg-amber-600 rounded font-bold">Restart</button>
+            <div id="modalIcon" class="text-4xl mb-2 piece-icon">👑</div>
+            <h2 id="modalTitle" class="text-xl font-black text-amber-500 uppercase">Battle Settled</h2>
+            <p id="modalDesc" class="text-sm text-amber-200 my-3"></p>
+            <button onclick="triggerReset(); document.getElementById('gameOverModal').classList.add('hidden')" class="w-full py-2 bg-amber-600 rounded font-bold text-stone-950 hover:bg-amber-500">Restart</button>
         </div>
     </div>
+
 <script>
         const VERCEL_API_URL = "https://chaturanga.quarry.dpdns.org/api";
 
@@ -243,8 +260,8 @@
             resetInitialSetup();
             modalElement.classList.add('hidden');
 
-            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button';
-            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider flex items-center justify-center gap-1 mode-button';
+            document.getElementById('btn2P').className = currentMode === '2-Player' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider mode-button' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider mode-button';
+            document.getElementById('btnAI').className = currentMode === 'Vs-AI' ? 'flex-1 py-2 text-[11px] font-bold bg-amber-600 text-stone-950 rounded cursor-pointer transition uppercase tracking-wider mode-button' : 'flex-1 py-2 text-[11px] font-bold bg-stone-900/60 rounded cursor-pointer transition uppercase tracking-wider mode-button';
 
             if (currentMode === 'Vs-AI') {
                 document.getElementById('loss-title-1').innerText = "💀 YOUR LOSSES";
@@ -255,7 +272,8 @@
             }
             createBoard();
         }
-                    function generateAITeachingReport(userWon) {
+
+        function generateAITeachingReport(userWon) {
             if (currentMode !== 'Vs-AI') return "Match finished locally.";
             if (userWon) {
                 gameMetrics.consecutiveUserLosses = 0;
